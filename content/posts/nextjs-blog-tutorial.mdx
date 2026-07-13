@@ -1,0 +1,80 @@
+---
+title: "用 Next.js + MDX 搭一个能上线的博客"
+description: "十分钟跑起来的极简博客模板，含 RSS、暗色模式、SEO。"
+date: "2026-06-25"
+tags: ["Next.js", "教程", "博客"]
+---
+
+最近把博客从 Hexo 换到了 Next.js，记录一下搭建过程。整个项目不大，但五脏俱全。
+
+## 技术选型
+
+| 用途 | 选型 |
+| --- | --- |
+| 框架 | Next.js 14（App Router） |
+| 内容 | MDX（Markdown + JSX） |
+| 样式 | Tailwind CSS |
+| 部署 | Vercel |
+
+为什么选 MDX？因为可以一边写 Markdown，一边在文章里直接塞 React 组件。比如：
+
+```mdx
+<Callout type="info">
+这是一段组件化的提示框。
+</Callout>
+```
+
+## 核心结构
+
+```
+content/
+  posts/
+    hello-world.mdx
+    nextjs-blog-tutorial.mdx
+src/
+  app/
+    page.tsx          # 首页
+    posts/
+      page.tsx        # 文章列表
+      [slug]/
+        page.tsx      # 文章详情
+    rss.xml/
+      route.ts        # RSS 输出
+    sitemap.ts        # sitemap
+  lib/
+    posts.ts          # 读取 MDX 文件
+```
+
+## 关键代码：读取 frontmatter
+
+```ts
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
+
+const postsDir = path.join(process.cwd(), "content", "posts");
+
+export function getPostBySlug(slug: string) {
+  const file = path.join(postsDir, `${slug}.mdx`);
+  const raw = fs.readFileSync(file, "utf8");
+  const { data, content } = matter(raw);
+  return { frontmatter: data, content };
+}
+```
+
+## 部署到 Vercel
+
+1. 把代码 push 到 GitHub
+2. 在 Vercel 点 "New Project"，选你的仓库
+3. 直接 Deploy，完事
+
+首次部署大约 30 秒，之后每次 push 自动触发部署。
+
+## 后续可以加的东西
+
+- [ ] 评论系统（[giscus](https://giscus.app)）
+- [ ] 文章搜索（pagefind 或 algolia）
+- [ ] 访问统计（plausible / umami）
+- [ ] Newsletter（resend / buttondown）
+
+慢慢来，博客是一个**长期项目**，急不得。

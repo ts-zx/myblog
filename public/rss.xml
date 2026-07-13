@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>我的小站</title>
+    <description>记录、思考、分享</description>
+    <link>https://my-blog.pages.dev</link>
+    <atom:link href="https://my-blog.pages.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <language>zh-CN</language>
+    <lastBuildDate>Mon, 13 Jul 2026 15:04:25 GMT</lastBuildDate>
+    
+    <item>
+      <title>Hello World · 博客开张</title>
+      <description>这是我新博客的第一篇文章，聊聊为什么开始写博客。</description>
+      <link>https://my-blog.pages.dev/posts/hello-world</link>
+      <guid isPermaLink="false">hello-world</guid>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 GMT</pubDate>
+      <author>Your Name</author>
+      <category>随笔</category>
+      <category>Meta</category>
+    </item>
+    <item>
+      <title>用 Next.js + MDX 搭一个能上线的博客</title>
+      <description>十分钟跑起来的极简博客模板，含 RSS、暗色模式、SEO。</description>
+      <link>https://my-blog.pages.dev/posts/nextjs-blog-tutorial</link>
+      <guid isPermaLink="false">nextjs-blog-tutorial</guid>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 GMT</pubDate>
+      <author>Your Name</author>
+      <category>Next.js</category>
+      <category>教程</category>
+      <category>博客</category>
+    </item>
+    <item>
+      <title>极简生活三个月，我都扔掉了什么</title>
+      <description>关于断舍离的一些实际经验，而不是网上流传的那种鸡汤。</description>
+      <link>https://my-blog.pages.dev/posts/minimalist-life</link>
+      <guid isPermaLink="false">minimalist-life</guid>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 GMT</pubDate>
+      <author>Your Name</author>
+      <category>生活</category>
+      <category>断舍离</category>
+    </item>
+  </channel>
+</rss>

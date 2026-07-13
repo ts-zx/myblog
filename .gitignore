@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# next.js
+.next/
+out/
+
+# cloudflare
+.wrangler/
+.functions/
+
+# build artifacts
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts.bak
+
+# env
+.env*.local
+.env
+
+# logs
+*.log
+npm-debug.log*
+
+# editor
+.DS_Store
+.vscode/
+.idea/
+*.swp

@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: "我的小站",
   description: "记录、思考、分享",
-  author: "Your Name",
-  email: "you@example.com",
-  github: "https://github.com/yourname",
+  author: "TSZX.",
+  email: "399172250@qq.com",
+  github: "https://github.com/ts-zx",
   twitter: "https://twitter.com/yourname",
   url: "https://your-domain.vercel.app",
   language: "zh-CN",

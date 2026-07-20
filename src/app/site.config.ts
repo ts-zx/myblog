@@ -5,7 +5,7 @@ export const siteConfig = {
   email: "399172250@qq.com",
   github: "https://github.com/ts-zx",
   twitter: "https://twitter.com/yourname",
-  url: "https://your-domain.vercel.app",
+  url: "https://tszx.zh.kg",
   language: "zh-CN",
   nav: [
     { href: "/", label: "首页" },

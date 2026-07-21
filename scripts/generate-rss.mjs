@@ -13,10 +13,10 @@ const root = path.resolve(__dirname, "..");
 
 // Mirror src/app/site.config.ts — keep in sync
 const SITE = {
-  name: "我的小站",
+  name: "中出博客",
   description: "记录、思考、分享",
-  author: "Your Name",
-  url: "https://my-blog.pages.dev", // <-- 改成你的 Pages 域名
+  author: "TSZX.",
+  url: "https://tszx.zh.kg", // <-- 改成你的 Pages 域名
   language: "zh-CN",
 };
 

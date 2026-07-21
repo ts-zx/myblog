@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "中出播客",
+  name: "中出博客",
   description: "记录、思考、分享",
   author: "TSZX.",
   email: "399172250@qq.com",

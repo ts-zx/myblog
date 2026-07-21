@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
 import { siteConfig } from "@/app/site.config";
+import { Sparkles } from "lucide-react";
 
 export default function HomePage() {
   const posts = getAllPosts().slice(0, 5);
@@ -12,8 +13,9 @@ export default function HomePage() {
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
           你好，我是 <span className="text-indigo-600 dark:text-indigo-400">{siteConfig.author}</span>
         </h1>
-        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
-          {siteConfig.description}。这里记录我的学习、生活和思考，欢迎常来逛逛 ✨
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed inline-flex items-center gap-2 flex-wrap">
+          {siteConfig.description}。这里记录我的学习、生活和思考，欢迎常来逛逛
+          <Sparkles className="w-5 h-5 text-indigo-500 inline-block" aria-hidden />
         </p>
         <div className="mt-6 flex gap-3">
           <Link

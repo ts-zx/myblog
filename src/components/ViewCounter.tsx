@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Eye } from "lucide-react";
 
 export function ViewCounter({ slug }: { slug: string }) {
   const [count, setCount] = useState<number | null>(null);
@@ -25,7 +26,7 @@ export function ViewCounter({ slug }: { slug: string }) {
       className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400"
       title="阅读量（Cloudflare Workers + KV 统计）"
     >
-      <span aria-hidden>👀</span>
+      <Eye className="w-3.5 h-3.5" aria-hidden />
       <span>{count === null ? "…" : count.toLocaleString()}</span>
     </span>
   );

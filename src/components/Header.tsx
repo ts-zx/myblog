@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "@/lib/useTheme";
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 import { siteConfig } from "@/app/site.config";
 
 export function Header() {
@@ -30,10 +31,13 @@ export function Header() {
           <button
             aria-label="切换主题"
             onClick={toggle}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-base"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
           >
-            {mounted && (resolvedTheme === "dark" ? "🌙" : "☀️")}
-            {!mounted && <span className="block w-4 h-4" />}
+            {mounted && resolvedTheme === "dark" ? (
+              <Moon className="w-4 h-4" />
+            ) : (
+              <Sun className="w-4 h-4" />
+            )}
           </button>
         </nav>
       </div>

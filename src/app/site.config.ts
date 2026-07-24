@@ -1,10 +1,10 @@
 export const siteConfig = {
-  name: "我的小站",
+  name: "天寿小站",
   description: "记录、思考、分享",
   author: "Your Name",
   email: "you@example.com",
-  github: "https://github.com/yourname",
-  url: "https://myblog-xr5.pages.dev",
+  github: "https://github.com/ts-zx",
+  url: "https://tszx.zh.kg",
   language: "zh-CN",
   nav: [
     { href: "/", label: "首页" },

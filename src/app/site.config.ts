@@ -22,10 +22,10 @@ export const siteConfig = {
   // giscus 评论 (基于 GitHub Discussions，去 https://giscus.app/zh-CN 配置)
   giscus: {
     enabled: false,
-    repo: "yourname/yourname.github.io",
-    repoId: "",
+    repo: "ts-zx/myblog",
+    repoId: "R_kgDOTXmh0Q",
     category: "Announcements",
-    categoryId: "",
+    categoryId: "DIC_kwDOTXmh0c4DB3kT",
   },
 };
 

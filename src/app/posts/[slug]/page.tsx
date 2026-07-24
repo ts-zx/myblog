@@ -8,6 +8,8 @@ import remarkGfm from "remark-gfm";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { siteConfig } from "@/app/site.config";
 import { ViewCounter } from "@/components/ViewCounter";
+import { LikeButton } from "@/components/LikeButton";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
@@ -36,6 +38,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 
   return (
     <article className="py-10">
+      <ReadingProgress />
       <Link href="/posts" className="text-sm text-gray-500 hover:text-indigo-500">
         ← 返回所有文章
       </Link>
@@ -82,6 +85,12 @@ export default function PostPage({ params }: { params: { slug: string } }) {
           }}
         />
       </div>
+
+      {siteConfig.likes?.enabled && (
+        <div className="mt-10 pt-6 border-t flex justify-center">
+          <LikeButton slug={post.slug} />
+        </div>
+      )}
 
       {siteConfig.giscus.enabled && <GiscusComments />}
 

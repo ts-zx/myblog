@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/useTheme";
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import { siteConfig } from "@/app/site.config";
+import { Search } from "@/components/Search";
 
 export function Header() {
   const [mounted, setMounted] = useState(false);
@@ -28,6 +29,7 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <Search />
           <button
             aria-label="切换主题"
             onClick={toggle}

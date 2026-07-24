@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "天寿小站",
   description: "记录、思考、分享",
-  author: "Your Name",
-  email: "you@example.com",
+  author: "TSZX.",
+  email: "me@furui.de5.net",
   github: "https://github.com/ts-zx",
   url: "https://tszx.zh.kg",
   language: "zh-CN",

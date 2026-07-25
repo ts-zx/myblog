@@ -1,8 +1,8 @@
 export const siteConfig = {
-  name: "天寿小站",
+  name: "中出博客",
   description: "记录、思考、分享",
   author: "TSZX.",
-  email: "me@furui.de5.net",
+  email: "399172250@qq.com",
   github: "https://github.com/ts-zx",
   url: "https://tszx.zh.kg",
   language: "zh-CN",
@@ -19,13 +19,13 @@ export const siteConfig = {
   likes: {
     enabled: true,
   },
-  // giscus 评论 (基于 GitHub Discussions，去 https://giscus.app/zh-CN 配置)
+  // giscus 评论 (基于 GitHub Discussions)
   giscus: {
-    enabled: false,
+    enabled: true,
     repo: "ts-zx/myblog",
     repoId: "R_kgDOTXmh0Q",
-    category: "Announcements",
-    categoryId: "DIC_kwDOTXmh0c4DB3kT",
+    category: "Announcements",          // ← 改成你仓库里的分类
+    categoryId: "",                      // ← 留空，下面有获取方法
   },
 };
 

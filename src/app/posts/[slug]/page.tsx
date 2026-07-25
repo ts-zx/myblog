@@ -18,9 +18,45 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }) {
   try {
     const post = getPostBySlug(params.slug);
+    const { frontmatter, slug } = post;
+    const url = `${siteConfig.url}/posts/${slug}`;
+    const ogImage = frontmatter.cover
+      ? (frontmatter.cover.startsWith("http") ? frontmatter.cover : `${siteConfig.url}${frontmatter.cover}`)
+      : `${siteConfig.url}/og-default.png`; // 可选：放一张默认 OG 图到 public/og-default.png
+
     return {
-      title: post.frontmatter.title,
-      description: post.frontmatter.description,
+      title: frontmatter.title,
+      description: frontmatter.description,
+      authors: [{ name: siteConfig.author }],
+      keywords: frontmatter.tags,
+      alternates: {
+        canonical: url,
+      },
+      openGraph: {
+        type: "article",
+        title: frontmatter.title,
+        description: frontmatter.description ?? "",
+        url,
+        siteName: siteConfig.name,
+        locale: "zh_CN",
+        publishedTime: new Date(frontmatter.date).toISOString(),
+        authors: [siteConfig.author],
+        tags: frontmatter.tags,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: frontmatter.title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: frontmatter.title,
+        description: frontmatter.description ?? "",
+        images: [ogImage],
+      },
     };
   } catch {
     return { title: "Not Found" };
@@ -92,7 +128,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
         </div>
       )}
 
-      {siteConfig.giscus.enabled && <GiscusComments />}
+      {siteConfig.giscus?.enabled && <GiscusComments />}
 
       <footer className="mt-12 pt-6 border-t text-sm text-gray-500">
         <Link href="/posts" className="hover:text-indigo-500">

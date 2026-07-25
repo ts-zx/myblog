@@ -25,7 +25,7 @@ export const siteConfig = {
     repo: "ts-zx/myblog",
     repoId: "R_kgDOTXmh0Q",
     category: "Announcements",          // ← 改成你仓库里的分类
-    categoryId: "",                      // ← 留空，下面有获取方法
+    categoryId: "DIC_kwDOTXmh0c4DB3kT",                      // ← 留空，下面有获取方法
   },
 };
 

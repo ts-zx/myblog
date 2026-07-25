@@ -1,8 +1,8 @@
 export const siteConfig = {
-  name: "中出博客",
+  name: "天寿的小站",
   description: "记录、思考、分享",
   author: "TSZX.",
-  email: "399172250@qq.com",
+  email: "me@furui.de5.net",
   github: "https://github.com/ts-zx",
   url: "https://tszx.zh.kg",
   language: "zh-CN",

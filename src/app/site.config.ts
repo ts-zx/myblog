@@ -19,13 +19,13 @@ export const siteConfig = {
   likes: {
     enabled: true,
   },
-  // giscus 评论 (基于 GitHub Discussions)
+  // giscus 评论
   giscus: {
     enabled: true,
     repo: "ts-zx/myblog",
     repoId: "R_kgDOTXmh0Q",
-    category: "Announcements",          // ← 改成你仓库里的分类
-    categoryId: "DIC_kwDOTXmh0c4DB3kT",                      // ← 留空，下面有获取方法
+    category: "Announcements",
+    categoryId: "DIC_kwDOTXmh0c4DB3kT",
   },
 };
 

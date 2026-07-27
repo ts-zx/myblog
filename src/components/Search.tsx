@@ -13,45 +13,77 @@ type PagefindResult = {
   }>;
 };
 
-type PagefindSearch = {
+type PagefindAPI = {
   search: (q: string) => Promise<{ results: PagefindResult[] }>;
+  init?: () => Promise<void>;
+  options?: (opts: Record<string, unknown>) => void;
+  preload?: () => Promise<void>;
 };
 
 declare global {
   interface Window {
-    __pagefind?: PagefindSearch;
+    pagefind?: PagefindAPI;
   }
 }
 
-let pagefindPromise: Promise<PagefindSearch | null> | null = null;
+let initPromise: Promise<PagefindAPI | null> | null = null;
 
-function loadPagefindScript(): Promise<PagefindSearch | null> {
+function ensurePagefind(): Promise<PagefindAPI | null> {
   if (typeof window === "undefined") return Promise.resolve(null);
-  if (window.__pagefind) return Promise.resolve(window.__pagefind);
-  if (pagefindPromise) return pagefindPromise;
+  if (initPromise) return initPromise;
 
-  pagefindPromise = new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "/pagefind/pagefind.js";
-    script.async = true;
-    script.onload = () => {
-      // pagefind.js exposes itself via `window.pagefind`
-      const pf = (window as unknown as { pagefind?: PagefindSearch }).pagefind;
-      if (pf) {
-        // pagefind needs init() to load its index
-        // @ts-expect-error - pagefind's init signature varies
-        pf.init?.().then(() => {
-          window.__pagefind = pf;
-          resolve(pf);
-        });
-      } else {
+  initPromise = new Promise((resolve) => {
+    // 如果 pagefind.js 已经加载过了（之前注入过），直接用
+    const existing = document.querySelector(
+      'script[data-pagefind-loader]'
+    ) as HTMLScriptElement | null;
+
+    const onReady = async () => {
+      const pf = window.pagefind;
+      if (!pf) {
+        console.warn("[Search] window.pagefind is not available");
+        resolve(null);
+        return;
+      }
+      try {
+        if (typeof pf.init === "function") {
+          await pf.init();
+        }
+        if (typeof pf.options === "function") {
+          pf.options({ excerptLength: 30 });
+        }
+        resolve(pf);
+      } catch (e) {
+        console.error("[Search] pagefind init error:", e);
         resolve(null);
       }
     };
-    script.onerror = () => resolve(null);
+
+    if (window.pagefind) {
+      onReady();
+      return;
+    }
+
+    if (existing) {
+      existing.addEventListener("load", onReady);
+      return;
+    }
+
+    // 注入 pagefind.js
+    const script = document.createElement("script");
+    script.src = "/pagefind/pagefind.js";
+    script.async = true;
+    script.defer = true;
+    script.setAttribute("data-pagefind-loader", "true");
+    script.onload = onReady;
+    script.onerror = () => {
+      console.error("[Search] pagefind.js failed to load");
+      resolve(null);
+    };
     document.head.appendChild(script);
   });
-  return pagefindPromise;
+
+  return initPromise;
 }
 
 export function Search() {
@@ -59,9 +91,10 @@ export function Search() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PagefindResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Open with ⌘K / Ctrl+K
+  // ⌘K / Ctrl+K 快捷键
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -90,21 +123,22 @@ export function Search() {
       return;
     }
     setLoading(true);
-    const pf = await loadPagefindScript();
+    const pf = await ensurePagefind();
     if (!pf) {
       setLoading(false);
       return;
     }
+    setReady(true);
     try {
       const out = await pf.search(q);
       setResults(out.results.slice(0, 8));
     } catch (e) {
-      console.error("search failed", e);
+      console.error("[Search] search error:", e);
     }
     setLoading(false);
   }, []);
 
-  // Debounce
+  // 防抖
   useEffect(() => {
     const t = setTimeout(() => runSearch(query), 200);
     return () => clearTimeout(t);
@@ -137,7 +171,7 @@ export function Search() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="搜索文章... (Ctrl+K)"
+                placeholder={ready ? "搜索文章..." : "首次搜索会加载索引..."}
                 className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
               />
               <button
@@ -177,6 +211,7 @@ export function Search() {
 
             <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 flex items-center gap-3">
               <span>esc 关闭</span>
+              <span>Ctrl+K 打开</span>
             </div>
           </div>
         </div>

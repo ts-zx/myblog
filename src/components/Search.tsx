@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import Script from "next/script";
 import { Search as SearchIcon, X, FileText } from "lucide-react";
 import Link from "next/link";
 
@@ -17,74 +18,30 @@ type PagefindAPI = {
   search: (q: string) => Promise<{ results: PagefindResult[] }>;
   init?: () => Promise<void>;
   options?: (opts: Record<string, unknown>) => void;
-  preload?: () => Promise<void>;
 };
 
 declare global {
   interface Window {
     pagefind?: PagefindAPI;
   }
+  interface WindowEventMap {
+    "pagefind-ready": Event;
+  }
 }
 
-let initPromise: Promise<PagefindAPI | null> | null = null;
-
-function ensurePagefind(): Promise<PagefindAPI | null> {
-  if (typeof window === "undefined") return Promise.resolve(null);
-  if (initPromise) return initPromise;
-
-  initPromise = new Promise((resolve) => {
-    // 如果 pagefind.js 已经加载过了（之前注入过），直接用
-    const existing = document.querySelector(
-      'script[data-pagefind-loader]'
-    ) as HTMLScriptElement | null;
-
-    const onReady = async () => {
-      const pf = window.pagefind;
-      if (!pf) {
-        console.warn("[Search] window.pagefind is not available");
-        resolve(null);
-        return;
-      }
-      try {
-        if (typeof pf.init === "function") {
-          await pf.init();
-        }
-        if (typeof pf.options === "function") {
-          pf.options({ excerptLength: 30 });
-        }
-        resolve(pf);
-      } catch (e) {
-        console.error("[Search] pagefind init error:", e);
-        resolve(null);
-      }
-    };
-
-    if (window.pagefind) {
-      onReady();
-      return;
-    }
-
-    if (existing) {
-      existing.addEventListener("load", onReady);
-      return;
-    }
-
-    // 注入 pagefind.js
-    const script = document.createElement("script");
-    script.src = "/pagefind/pagefind.js";
-    script.async = true;
-    script.defer = true;
-    script.setAttribute("data-pagefind-loader", "true");
-    script.onload = onReady;
-    script.onerror = () => {
-      console.error("[Search] pagefind.js failed to load");
-      resolve(null);
-    };
-    document.head.appendChild(script);
-  });
-
-  return initPromise;
-}
+// 内联脚本：通过 ESM dynamic import 加载 pagefind.js 并挂到 window
+// pagefind.js 是 ESM 模块（export{...}），普通 script 加载无效，必须用 type="module"
+const PAGEFIND_LOADER = `
+import('/pagefind/pagefind.js').then((m) => {
+  window.pagefind = m;
+  if (typeof m.init === 'function') return m.init();
+}).then(() => {
+  window.dispatchEvent(new Event('pagefind-ready'));
+}).catch((err) => {
+  console.error('[pagefind] load failed:', err);
+  window.dispatchEvent(new Event('pagefind-failed'));
+});
+`;
 
 export function Search() {
   const [open, setOpen] = useState(false);
@@ -93,6 +50,20 @@ export function Search() {
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 监听 pagefind 就绪事件
+  useEffect(() => {
+    const onReady = () => setReady(true);
+    const onFailed = () => setReady(false);
+    window.addEventListener("pagefind-ready", onReady);
+    window.addEventListener("pagefind-failed", onFailed);
+    // 如果已经就绪
+    if (window.pagefind) setReady(true);
+    return () => {
+      window.removeEventListener("pagefind-ready", onReady);
+      window.removeEventListener("pagefind-failed", onFailed);
+    };
+  }, []);
 
   // ⌘K / Ctrl+K 快捷键
   useEffect(() => {
@@ -122,13 +93,23 @@ export function Search() {
       setResults([]);
       return;
     }
-    setLoading(true);
-    const pf = await ensurePagefind();
+    if (!window.pagefind) {
+      // 等待 pagefind-ready 事件
+      await new Promise<void>((resolve) => {
+        const t = setTimeout(resolve, 3000);
+        window.addEventListener("pagefind-ready", () => {
+          clearTimeout(t);
+          resolve();
+        }, { once: true });
+      });
+    }
+    const pf = window.pagefind;
     if (!pf) {
       setLoading(false);
       return;
     }
     setReady(true);
+    setLoading(true);
     try {
       const out = await pf.search(q);
       setResults(out.results.slice(0, 8));
@@ -146,6 +127,11 @@ export function Search() {
 
   return (
     <>
+      {/* pagefind ESM loader - 在 body 中执行，不是 head */}
+      <Script id="pagefind-loader" strategy="afterInteractive">
+        {PAGEFIND_LOADER}
+      </Script>
+
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -171,7 +157,7 @@ export function Search() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={ready ? "搜索文章..." : "首次搜索会加载索引..."}
+                placeholder={ready ? "搜索文章..." : "加载搜索索引..."}
                 className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
               />
               <button
@@ -187,7 +173,7 @@ export function Search() {
             <div className="max-h-[60vh] overflow-y-auto">
               {!query && (
                 <div className="px-4 py-8 text-center text-sm text-gray-500">
-                  输入关键词开始搜索
+                  {ready ? "输入关键词开始搜索" : "首次打开会加载索引（约 1 秒）"}
                 </div>
               )}
               {query && loading && (

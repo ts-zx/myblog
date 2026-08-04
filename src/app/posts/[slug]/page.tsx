@@ -1,6 +1,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 import { format } from "date-fns";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -22,16 +23,14 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
     const url = `${siteConfig.url}/posts/${slug}`;
     const ogImage = frontmatter.cover
       ? (frontmatter.cover.startsWith("http") ? frontmatter.cover : `${siteConfig.url}${frontmatter.cover}`)
-      : `${siteConfig.url}/og-default.png`; // 可选：放一张默认 OG 图到 public/og-default.png
+      : `${siteConfig.url}/og-default.png`;
 
     return {
       title: frontmatter.title,
       description: frontmatter.description,
       authors: [{ name: siteConfig.author }],
       keywords: frontmatter.tags,
-      alternates: {
-        canonical: url,
-      },
+      alternates: { canonical: url },
       openGraph: {
         type: "article",
         title: frontmatter.title,
@@ -42,14 +41,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
         publishedTime: new Date(frontmatter.date).toISOString(),
         authors: [siteConfig.author],
         tags: frontmatter.tags,
-        images: [
-          {
-            url: ogImage,
-            width: 1200,
-            height: 630,
-            alt: frontmatter.title,
-          },
-        ],
+        images: [{ url: ogImage, width: 1200, height: 630, alt: frontmatter.title }],
       },
       twitter: {
         card: "summary_large_image",
@@ -143,7 +135,11 @@ function GiscusComments() {
   const { repo, repoId, category, categoryId } = siteConfig.giscus;
   return (
     <div className="mt-12">
-      <script
+      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        评论
+      </h3>
+      {/* 使用 next/script 而不是 <script>，避免被 RSC hoisted 到 head */}
+      <Script
         src="https://giscus.app/client.js"
         data-repo={repo}
         data-repo-id={repoId}
@@ -157,7 +153,7 @@ function GiscusComments() {
         data-theme="preferred_color_scheme"
         data-lang="zh-CN"
         crossOrigin="anonymous"
-        async
+        strategy="afterInteractive"
       />
     </div>
   );

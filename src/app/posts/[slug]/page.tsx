@@ -114,14 +114,14 @@ export default function PostPage({ params }: { params: { slug: string } }) {
       </div>
 
       {siteConfig.likes?.enabled && (
-        <div className="mt-10 pt-6 border-t flex justify-center">
+        <div className="mt-8 pt-6 border-t flex justify-center">
           <LikeButton slug={post.slug} />
         </div>
       )}
 
       {siteConfig.giscus?.enabled && <GiscusComments />}
 
-      <footer className="mt-12 pt-6 border-t text-sm text-gray-500">
+      <footer className="mt-8 pt-6 border-t text-sm text-gray-500">
         <Link href="/posts" className="hover:text-indigo-500">
           ← 回到文章列表
         </Link>
@@ -135,26 +135,30 @@ function GiscusComments() {
   // 使用 dangerouslySetInnerHTML 而不是 next/script
   // 这样能保证 script 标签在 body 中正确渲染，giscus 才能找到容器
   const giscusScript = `
-    const giscusScript = document.createElement('script');
-    giscusScript.src = 'https://giscus.app/client.js';
-    giscusScript.setAttribute('data-repo', '${repo}');
-    giscusScript.setAttribute('data-repo-id', '${repoId}');
-    giscusScript.setAttribute('data-category', '${category}');
-    giscusScript.setAttribute('data-category-id', '${categoryId}');
-    giscusScript.setAttribute('data-mapping', 'pathname');
-    giscusScript.setAttribute('data-strict', '0');
-    giscusScript.setAttribute('data-reactions-enabled', '1');
-    giscusScript.setAttribute('data-emit-metadata', '0');
-    giscusScript.setAttribute('data-input-position', 'top');
-    giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
-    giscusScript.setAttribute('data-lang', 'zh-CN');
-    giscusScript.setAttribute('crossOrigin', 'anonymous');
-    giscusScript.async = true;
-    document.currentScript.parentElement.appendChild(giscusScript);
+    (function() {
+      var s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.setAttribute('data-repo', '${repo}');
+      s.setAttribute('data-repo-id', '${repoId}');
+      s.setAttribute('data-category', '${category}');
+      s.setAttribute('data-category-id', '${categoryId}');
+      s.setAttribute('data-mapping', 'pathname');
+      s.setAttribute('data-strict', '0');
+      s.setAttribute('data-reactions-enabled', '1');
+      s.setAttribute('data-emit-metadata', '0');
+      s.setAttribute('data-input-position', 'top');
+      s.setAttribute('data-theme', 'preferred_color_scheme');
+      s.setAttribute('data-lang', 'zh-CN');
+      s.setAttribute('crossOrigin', 'anonymous');
+      s.async = true;
+      // 把 script 插入到 .giscus 容器之前
+      var target = document.currentScript.parentElement;
+      target.insertBefore(s, target.lastChild);
+    })();
   `;
 
   return (
-    <div className="mt-12">
+    <div className="mt-8">
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">评论</h3>
       {/* giscus 会自动在这个 div 里渲染评论 iframe */}
       <div className="giscus" dangerouslySetInnerHTML={{ __html: '' }} />

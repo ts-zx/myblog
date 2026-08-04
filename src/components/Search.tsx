@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import Script from "next/script";
 import { Search as SearchIcon, X, FileText } from "lucide-react";
 import Link from "next/link";
 
@@ -29,20 +28,6 @@ declare global {
   }
 }
 
-// 内联脚本：通过 ESM dynamic import 加载 pagefind.js 并挂到 window
-// pagefind.js 是 ESM 模块（export{...}），普通 script 加载无效，必须用 type="module"
-const PAGEFIND_LOADER = `
-import('/pagefind/pagefind.js').then((m) => {
-  window.pagefind = m;
-  if (typeof m.init === 'function') return m.init();
-}).then(() => {
-  window.dispatchEvent(new Event('pagefind-ready'));
-}).catch((err) => {
-  console.error('[pagefind] load failed:', err);
-  window.dispatchEvent(new Event('pagefind-failed'));
-});
-`;
-
 export function Search() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -57,7 +42,6 @@ export function Search() {
     const onFailed = () => setReady(false);
     window.addEventListener("pagefind-ready", onReady);
     window.addEventListener("pagefind-failed", onFailed);
-    // 如果已经就绪
     if (window.pagefind) setReady(true);
     return () => {
       window.removeEventListener("pagefind-ready", onReady);
@@ -94,7 +78,6 @@ export function Search() {
       return;
     }
     if (!window.pagefind) {
-      // 等待 pagefind-ready 事件
       await new Promise<void>((resolve) => {
         const t = setTimeout(resolve, 3000);
         window.addEventListener("pagefind-ready", () => {
@@ -127,11 +110,6 @@ export function Search() {
 
   return (
     <>
-      {/* pagefind ESM loader - 在 body 中执行，不是 head */}
-      <Script id="pagefind-loader" strategy="afterInteractive">
-        {PAGEFIND_LOADER}
-      </Script>
-
       <button
         type="button"
         onClick={() => setOpen(true)}

@@ -1,7 +1,6 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Script from "next/script";
 import { format } from "date-fns";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -133,28 +132,33 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 
 function GiscusComments() {
   const { repo, repoId, category, categoryId } = siteConfig.giscus;
+  // 使用 dangerouslySetInnerHTML 而不是 next/script
+  // 这样能保证 script 标签在 body 中正确渲染，giscus 才能找到容器
+  const giscusScript = `
+    const giscusScript = document.createElement('script');
+    giscusScript.src = 'https://giscus.app/client.js';
+    giscusScript.setAttribute('data-repo', '${repo}');
+    giscusScript.setAttribute('data-repo-id', '${repoId}');
+    giscusScript.setAttribute('data-category', '${category}');
+    giscusScript.setAttribute('data-category-id', '${categoryId}');
+    giscusScript.setAttribute('data-mapping', 'pathname');
+    giscusScript.setAttribute('data-strict', '0');
+    giscusScript.setAttribute('data-reactions-enabled', '1');
+    giscusScript.setAttribute('data-emit-metadata', '0');
+    giscusScript.setAttribute('data-input-position', 'top');
+    giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+    giscusScript.setAttribute('data-lang', 'zh-CN');
+    giscusScript.setAttribute('crossOrigin', 'anonymous');
+    giscusScript.async = true;
+    document.currentScript.parentElement.appendChild(giscusScript);
+  `;
+
   return (
     <div className="mt-12">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-        评论
-      </h3>
-      {/* 使用 next/script 而不是 <script>，避免被 RSC hoisted 到 head */}
-      <Script
-        src="https://giscus.app/client.js"
-        data-repo={repo}
-        data-repo-id={repoId}
-        data-category={category}
-        data-category-id={categoryId}
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="top"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
+      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">评论</h3>
+      {/* giscus 会自动在这个 div 里渲染评论 iframe */}
+      <div className="giscus" dangerouslySetInnerHTML={{ __html: '' }} />
+      <script dangerouslySetInnerHTML={{ __html: giscusScript }} />
     </div>
   );
 }

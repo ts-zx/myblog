@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { PagefindLoader } from "@/components/PagefindLoader";
 import { siteConfig } from "@/app/site.config";
 import "./globals.css";
 
@@ -35,6 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col antialiased">
+        {/* Pagefind ESM loader - 必须在 server component 里才会被渲染到 body */}
+        <PagefindLoader />
         <Header />
         <main className="flex-1 mx-auto w-full max-w-4xl px-6">{children}</main>
         <Footer />

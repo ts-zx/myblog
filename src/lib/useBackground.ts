@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useSyncExternalStore } from "react";
 
 const DB_NAME = "blog-bg";
 const STORE = "backgrounds";
@@ -19,41 +19,63 @@ const DEFAULT_SETTINGS: BgSettings = {
   overlayOpacity: 0.3,
 };
 
-export function useBackground() {
-  const [bgUrl, setBgUrl] = useState<string | null>(null);
-  const [settings, setSettings] = useState<BgSettings>(DEFAULT_SETTINGS);
-  const [ready, setReady] = useState(false);
+// 模块级共享 state - 所有 useBackground() 调用共享同一份
+type State = {
+  bgUrl: string | null;
+  settings: BgSettings;
+  ready: boolean;
+};
 
-  // 加载已保存的背景
-  useEffect(() => {
+let state: State = {
+  bgUrl: null,
+  settings: DEFAULT_SETTINGS,
+  ready: false,
+};
+
+const listeners = new Set<() => void>();
+
+function setState(updater: (s: State) => State) {
+  state = updater(state);
+  listeners.forEach((cb) => cb());
+}
+
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  return () => {
+    listeners.delete(cb);
+  };
+}
+
+// 加载已保存的背景（全局只跑一次）
+let loadStarted = false;
+function ensureLoaded() {
+  if (loadStarted) return;
+  loadStarted = true;
+  (async () => {
+    const id = localStorage.getItem(ID_KEY);
     let url: string | null = null;
-    (async () => {
-      const id = localStorage.getItem(ID_KEY);
-      if (id) {
-        try {
-          const blob = await getImage(id);
-          if (blob) {
-            url = URL.createObjectURL(blob);
-            setBgUrl(url);
-          }
-        } catch (e) {
-          console.error("load background failed", e);
-        }
+    if (id) {
+      try {
+        const blob = await getImage(id);
+        if (blob) url = URL.createObjectURL(blob);
+      } catch (e) {
+        console.error("load background failed", e);
       }
-      const s = localStorage.getItem(SETTINGS_KEY);
-      if (s) {
-        try {
-          setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(s) });
-        } catch {}
-      }
-      setReady(true);
-    })();
-    return () => {
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, []);
+    }
+    const s = localStorage.getItem(SETTINGS_KEY);
+    let settings = DEFAULT_SETTINGS;
+    if (s) {
+      try {
+        settings = { ...DEFAULT_SETTINGS, ...JSON.parse(s) };
+      } catch {}
+    }
+    setState((s) => ({ ...s, bgUrl: url, settings, ready: true }));
+  })();
+}
 
-  const setImage = useCallback(async (file: File) => {
+// 暴露给外部使用的方法
+export const backgroundActions = {
+  async setImage(file: File) {
     if (!file.type.startsWith("image/")) {
       throw new Error("请选择图片文件");
     }
@@ -63,31 +85,54 @@ export function useBackground() {
     const id = `bg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     await saveImage(id, file);
     localStorage.setItem(ID_KEY, id);
-    setBgUrl((oldUrl) => {
-      if (oldUrl) URL.revokeObjectURL(oldUrl);
-      return URL.createObjectURL(file);
-    });
-  }, []);
+    const oldUrl = state.bgUrl;
+    const newUrl = URL.createObjectURL(file);
+    setState((s) => ({ ...s, bgUrl: newUrl }));
+    if (oldUrl) URL.revokeObjectURL(oldUrl);
+  },
 
-  const updateSettings = useCallback((patch: Partial<BgSettings>) => {
-    setSettings((prev) => {
-      const next = { ...prev, ...patch };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
-      return next;
-    });
-  }, []);
+  updateSettings(patch: Partial<BgSettings>) {
+    const newSettings = { ...state.settings, ...patch };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+    setState((s) => ({ ...s, settings: newSettings }));
+  },
 
-  const reset = useCallback(async () => {
+  async reset() {
     const id = localStorage.getItem(ID_KEY);
     if (id) await deleteImage(id);
     localStorage.removeItem(ID_KEY);
-    setBgUrl((url) => {
-      if (url) URL.revokeObjectURL(url);
-      return null;
-    });
+    const oldUrl = state.bgUrl;
+    setState((s) => ({ ...s, bgUrl: null }));
+    if (oldUrl) URL.revokeObjectURL(oldUrl);
+  },
+};
+
+// React hook
+export function useBackground() {
+  // 触发首次加载
+  useEffect(() => {
+    ensureLoaded();
   }, []);
 
-  return { bgUrl, settings, setImage, updateSettings, reset, ready };
+  // 订阅 state 变化
+  const snapshot = useSyncExternalStore(
+    (cb) => subscribe(cb),
+    () => state,
+    () => state
+  );
+
+  const setImage = useCallback(backgroundActions.setImage, []);
+  const updateSettings = useCallback(backgroundActions.updateSettings, []);
+  const reset = useCallback(backgroundActions.reset, []);
+
+  return {
+    bgUrl: snapshot.bgUrl,
+    settings: snapshot.settings,
+    setImage,
+    updateSettings,
+    reset,
+    ready: snapshot.ready,
+  };
 }
 
 // IndexedDB helpers

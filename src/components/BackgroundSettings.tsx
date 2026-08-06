@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { Image as ImageIcon, X, Upload, Trash2 } from "lucide-react";
-import { useBackground } from "@/lib/useBackground";
+import { Image as ImageIcon, X, Upload, Trash2, Info } from "lucide-react";
+import { useBackground, backgroundActions } from "@/lib/useBackground";
 
 export function BackgroundSettings({
   open,
@@ -16,6 +16,7 @@ export function BackgroundSettings({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showRefreshTip, setShowRefreshTip] = useState(false);
 
   const handleFile = useCallback(
     async (file: File | null | undefined) => {
@@ -24,6 +25,7 @@ export function BackgroundSettings({
       setBusy(true);
       try {
         await setImage(file);
+        setShowRefreshTip(true);
       } catch (e) {
         setError(e instanceof Error ? e.message : "上传失败");
       }
@@ -44,21 +46,23 @@ export function BackgroundSettings({
   const handleReset = useCallback(async () => {
     if (!confirm("确定要清除背景吗？")) return;
     await reset();
+    setShowRefreshTip(false);
   }, [reset]);
 
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-start justify-center pt-[10vh] px-4"
+      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 sm:pt-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+        className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <ImageIcon className="w-5 h-5 text-indigo-500" />
+          <ImageIcon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
           <h2 className="flex-1 font-semibold text-gray-900 dark:text-gray-100">
             自定义背景
           </h2>
@@ -72,7 +76,8 @@ export function BackgroundSettings({
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
+        {/* Scrollable body */}
+        <div className="p-4 space-y-4 max-h-[calc(100vh-12rem)] sm:max-h-[60vh] overflow-y-auto">
           {/* 上传区 */}
           <div
             onDragOver={(e) => {
@@ -201,6 +206,16 @@ export function BackgroundSettings({
               完成
             </button>
           </div>
+
+          {/* 提示：刷新生效 */}
+          {showRefreshTip && bgUrl && (
+            <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 rounded">
+              <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>
+                背景已设置。如果没立刻看到效果，<strong>刷新一下页面</strong>（或按 <kbd className="px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50">F5</kbd>）。
+              </span>
+            </div>
+          )}
 
           <p className="text-xs text-gray-400 text-center pt-2 border-t border-gray-100 dark:border-gray-800">
             🔒 图片只存在你的浏览器本地，不会上传到服务器

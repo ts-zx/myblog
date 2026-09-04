@@ -11,23 +11,24 @@ export function PostCard({ post }: { post: Post }) {
           {frontmatter.title}
         </h2>
       </Link>
-      <div className="mt-1 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-        <time dateTime={frontmatter.date}>
-          {format(new Date(frontmatter.date), "yyyy-MM-dd")}
-        </time>
-        <span>·</span>
-        <span>{readingMinutes} 分钟阅读</span>
+      <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {/* 移动端：日期+阅读时间一行，标签下一行；PC 端：全部一行 */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <time dateTime={frontmatter.date}>
+            {format(new Date(frontmatter.date), "yyyy-MM-dd")}
+          </time>
+          <span>·</span>
+          <span>{readingMinutes} 分钟阅读</span>
+        </div>
         {frontmatter.tags && frontmatter.tags.length > 0 && (
-          <>
-            <span>·</span>
-            <div className="flex gap-2">
-              {frontmatter.tags.map((tag) => (
-                <span key={tag} className="text-indigo-600 dark:text-indigo-400">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </>
+          <div className="mt-1.5 sm:mt-0 sm:inline-flex sm:items-center sm:gap-2 sm:ml-3 flex gap-2 flex-wrap">
+            <span className="hidden sm:inline">·</span>
+            {frontmatter.tags.map((tag) => (
+              <span key={tag} className="text-indigo-600 dark:text-indigo-400">
+                #{tag}
+              </span>
+            ))}
+          </div>
         )}
       </div>
       {frontmatter.description && (

@@ -72,24 +72,25 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 
       <header className="mt-6 pb-6 border-b">
         <h1 className="text-4xl font-bold tracking-tight leading-tight">{frontmatter.title}</h1>
-        <div className="mt-3 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-          <time dateTime={frontmatter.date}>{format(new Date(frontmatter.date), "yyyy-MM-dd")}</time>
-          <span>·</span>
-          <span>{readingMinutes} 分钟阅读</span>
+        <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+          {/* 移动端：日期+时间+阅读量一行，标签下一行；PC 端：全部在一行 */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <time dateTime={frontmatter.date}>{format(new Date(frontmatter.date), "yyyy-MM-dd")}</time>
+            <span>·</span>
+            <span>{readingMinutes} 分钟阅读</span>
+            <span>·</span>
+            <ViewCounter slug={post.slug} />
+          </div>
           {frontmatter.tags && frontmatter.tags.length > 0 && (
-            <>
-              <span>·</span>
-              <div className="flex gap-2">
-                {frontmatter.tags.map((tag) => (
-                  <span key={tag} className="text-indigo-600 dark:text-indigo-400">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </>
+            <div className="mt-2 sm:mt-0 sm:inline-flex sm:items-center sm:gap-2 sm:ml-3 flex gap-2 flex-wrap">
+              <span className="hidden sm:inline">·</span>
+              {frontmatter.tags.map((tag) => (
+                <span key={tag} className="text-indigo-600 dark:text-indigo-400">
+                  #{tag}
+                </span>
+              ))}
+            </div>
           )}
-          <span>·</span>
-          <ViewCounter slug={post.slug} />
         </div>
         {frontmatter.description && (
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">

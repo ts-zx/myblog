@@ -31,24 +31,23 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
-        <div className="mx-auto max-w-4xl px-6 h-14 flex items-center justify-between gap-2">
-          {/* 左侧：Logo + 角标 + PC 导航（聚在一起） */}
-          <div className="flex items-center gap-6">
-            <Link
-              href="/"
-              className="relative inline-flex items-center gap-2 font-semibold tracking-tight whitespace-nowrap"
-            >
-              <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0" />
-              <span className="relative">
-                {siteConfig.name}
-                {/* "国际版" 角标 - 贴在站名右下方 */}
-                <span className="absolute left-full ml-1 top-full -translate-y-0.5 text-[9px] text-gray-400 dark:text-gray-500 font-normal whitespace-nowrap leading-none">
-                  国际版
-                </span>
-              </span>
-            </Link>
+        <div className="mx-auto max-w-4xl px-6 h-14 flex items-center justify-between gap-4">
+          {/* 左侧：Logo（含下标角标"国际版"，O₂ 样式） */}
+          <Link
+            href="/"
+            className="inline-flex items-baseline gap-2 font-semibold tracking-tight whitespace-nowrap"
+          >
+            <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 self-center" />
+            <span>{siteConfig.name}</span>
+            {/* O₂ 样式下标角标 - 同一行，小一号 */}
+            <sub className="text-[10px] text-gray-400 dark:text-gray-500 font-normal tracking-normal ml-0.5 select-none">
+              国际版
+            </sub>
+          </Link>
 
-            {/* PC 导航 - sm 以上才显示，跟 Logo 在一起 */}
+          {/* 右侧：导航 + 按钮组 */}
+          <div className="flex items-center gap-4 sm:gap-6">
+            {/* PC 导航 - 跟按钮一起在右侧 */}
             <nav className="hidden sm:flex items-center gap-5 text-sm">
               {siteConfig.nav.map((item) => (
                 <Link
@@ -60,33 +59,33 @@ export function Header() {
                 </Link>
               ))}
             </nav>
-          </div>
 
-          {/* 右侧按钮组 */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            <Search />
-            <BackgroundButton />
-            <button
-              aria-label="切换主题"
-              onClick={toggle}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
-            >
-              {mounted && resolvedTheme === "dark" ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
-            </button>
+            {/* 按钮组 */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Search />
+              <BackgroundButton />
+              <button
+                aria-label="切换主题"
+                onClick={toggle}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
+              >
+                {mounted && resolvedTheme === "dark" ? (
+                  <Moon className="w-4 h-4" />
+                ) : (
+                  <Sun className="w-4 h-4" />
+                )}
+              </button>
 
-            {/* 汉堡按钮 - 仅移动端 */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(true)}
-              aria-label="打开菜单"
-              className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+              {/* 汉堡按钮 - 仅移动端 */}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                aria-label="打开菜单"
+                className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </header>

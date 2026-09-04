@@ -52,14 +52,14 @@ export function BackgroundSettings({
   if (!open) return null;
 
   return (
-    // 外层：fixed 全屏，flex 居中，自己可滚动
+    // 外层：fixed 全屏，flex 居中
     <div
-      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
-      {/* 弹窗主体：固定最大高度，flex 纵向布局 */}
+      {/* 弹窗主体：固定最大高度，内部滚动 */}
       <div
-        className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col max-h-[85vh] my-auto"
+        className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col max-h-[85vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - 固定不滚动 */}
@@ -79,7 +79,7 @@ export function BackgroundSettings({
         </div>
 
         {/* Body - 唯一可滚动区域 */}
-        <div className="p-4 space-y-4 overflow-y-auto flex-1">
+        <div className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0">
           {/* 上传区 */}
           <div
             onDragOver={(e) => {

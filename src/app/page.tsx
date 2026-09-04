@@ -13,7 +13,7 @@ export default function HomePage() {
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
           你好，我是 <span className="text-indigo-600 dark:text-indigo-400">{siteConfig.author}</span>
         </h1>
-        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed whitespace-nowrap">
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
           {siteConfig.description}。这里记录我的学习、生活和思考，欢迎常来逛逛
           <Sparkles className="inline w-5 h-5 text-indigo-500 align-middle ml-1" aria-hidden />
         </p>

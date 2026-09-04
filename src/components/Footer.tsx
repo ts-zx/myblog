@@ -32,7 +32,7 @@ export function Footer() {
 
   return (
     <footer className="mt-20 border-t">
-      <div className="mx-auto max-w-4xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
+      <div className="mx-auto max-w-5xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
           © {new Date().getFullYear()} {siteConfig.author} · Powered by Next.js
         </div>

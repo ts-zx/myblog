@@ -59,11 +59,11 @@ export function BackgroundSettings({
     >
       {/* 弹窗主体：固定最大高度，内部滚动 */}
       <div
-        className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col max-h-[85vh] overflow-hidden"
+        className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[85vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header - 固定不滚动 */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        {/* Header - sticky 钉在顶部 */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900 rounded-t-xl">
           <ImageIcon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
           <h2 className="flex-1 font-semibold text-gray-900 dark:text-gray-100">
             自定义背景

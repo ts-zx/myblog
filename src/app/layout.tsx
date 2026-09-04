@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Pagefind ESM loader - 必须在 server component 里才会被渲染到 body */}
         <PagefindLoader />
         <Header />
-        <main className="flex-1 mx-auto w-full max-w-4xl px-6 relative">{children}</main>
+        <main className="flex-1 mx-auto w-full max-w-5xl px-6 relative">{children}</main>
         <Footer />
       </body>
     </html>

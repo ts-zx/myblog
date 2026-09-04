@@ -31,7 +31,7 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
-        <div className="mx-auto max-w-4xl px-6 h-14 flex items-center justify-between gap-4">
+        <div className="mx-auto max-w-5xl px-6 h-14 flex items-center justify-between gap-4">
           {/* 左侧：Logo（含下标角标"国际版"，O₂ 样式） */}
           <Link
             href="/"

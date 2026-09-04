@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export type Theme = "light" | "dark" | "system";
 
+// 圆形展开主题切换：捕获点击位置，用 View Transitions API 动画
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>("system");
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
@@ -31,11 +32,40 @@ export function useTheme() {
     return () => mq.removeEventListener("change", handler);
   }, [theme]);
 
-  const toggle = () => {
-    const next: Theme = resolvedTheme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-  };
+  // 带动画的切换：从点击位置圆形展开/收缩
+  const toggleWithTransition = useCallback(
+    (event?: React.MouseEvent | MouseEvent) => {
+      const next: Theme = resolvedTheme === "dark" ? "light" : "dark";
 
-  return { theme, resolvedTheme, toggle, setTheme };
+      // 捕获点击位置（用于圆形展开动画中心）
+      if (event && typeof event.clientX === "number") {
+        document.documentElement.style.setProperty("--theme-x", `${event.clientX}px`);
+        document.documentElement.style.setProperty("--theme-y", `${event.clientY}px`);
+      } else {
+        // 降级：屏幕中心
+        document.documentElement.style.setProperty("--theme-x", "50%");
+        document.documentElement.style.setProperty("--theme-y", "50%");
+      }
+
+      // 应用 View Transitions API
+      const applyTheme = () => {
+        setTheme(next);
+        localStorage.setItem("theme", next);
+      };
+
+      // 检查浏览器是否支持 View Transitions
+      const doc = document as Document & {
+        startViewTransition?: (cb: () => void) => unknown;
+      };
+
+      if (typeof doc.startViewTransition === "function") {
+        doc.startViewTransition(applyTheme);
+      } else {
+        applyTheme();
+      }
+    },
+    [resolvedTheme]
+  );
+
+  return { theme, resolvedTheme, toggle: toggleWithTransition, setTheme };
 }

@@ -66,7 +66,7 @@ export function Header() {
               <BackgroundButton />
               <button
                 aria-label="切换主题"
-                onClick={toggle}
+                onClick={(e) => toggle(e)}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
               >
                 {mounted && resolvedTheme === "dark" ? (
@@ -90,34 +90,37 @@ export function Header() {
         </div>
       </header>
 
-      {/* 移动端全屏菜单 */}
-      {mobileMenuOpen && (
-        <div className="sm:hidden fixed inset-0 z-[100] bg-white dark:bg-gray-900 flex flex-col">
-          <div className="flex items-center justify-between px-6 h-14 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <span className="font-semibold text-gray-900 dark:text-gray-100">菜单</span>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="关闭菜单"
-              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <nav className="flex-1 px-6 py-6 flex flex-col gap-2">
-            {siteConfig.nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center px-4 py-4 rounded-md text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+      {/* 移动端全屏菜单 - 滑入滑出动画 */}
+      <div
+        className={`sm:hidden fixed inset-0 z-[100] bg-white dark:bg-gray-900 flex flex-col transform transition-transform duration-300 ease-out ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
+        }`}
+        aria-hidden={!mobileMenuOpen}
+      >
+        <div className="flex items-center justify-between px-6 h-14 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <span className="font-semibold text-gray-900 dark:text-gray-100">菜单</span>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="关闭菜单"
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-      )}
+        <nav className="flex-1 px-6 py-6 flex flex-col gap-2">
+          {siteConfig.nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center px-4 py-4 rounded-md text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
     </>
   );
 }

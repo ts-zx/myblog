@@ -52,14 +52,14 @@ export function BackgroundSettings({
   if (!open) return null;
 
   return (
-    // 外层：fixed 全屏，flex 居中
+    // 外层：fixed 全屏，移动端从顶部 8% 开始，PC 端居中
     <div
-      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 pt-[8vh] sm:pt-4 overflow-y-auto"
       onClick={onClose}
     >
       {/* 弹窗主体：固定最大高度，内部滚动 */}
       <div
-        className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[85vh] flex flex-col"
+        className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - sticky 钉在顶部 */}

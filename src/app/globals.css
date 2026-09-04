@@ -68,3 +68,39 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgb(var(--border)); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); }
+
+/* === 主题切换圆形展开动画 === */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 旧主题：以点击位置为中心，向内收缩消失 */
+::view-transition-old(root) {
+  clip-path: circle(150% at var(--theme-x, 50%) var(--theme-y, 50%));
+  animation-name: theme-shrink;
+}
+
+/* 新主题：从点击位置向外展开 */
+::view-transition-new(root) {
+  animation-name: theme-expand;
+}
+
+@keyframes theme-expand {
+  from {
+    clip-path: circle(0% at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+  to {
+    clip-path: circle(150% at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+}
+
+@keyframes theme-shrink {
+  from {
+    clip-path: circle(150% at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+  to {
+    clip-path: circle(0% at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+}

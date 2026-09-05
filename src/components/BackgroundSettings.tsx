@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Image as ImageIcon, X, Upload, Trash2, Info } from "lucide-react";
+import { Image as ImageIcon, X, Upload, Trash2, Info, Move, RotateCcw } from "lucide-react";
 import { useBackground } from "@/lib/useBackground";
 
 export function BackgroundSettings({
@@ -86,33 +86,38 @@ export function BackgroundSettings({
 
         {/* Body - 唯一可滚动区域 */}
         <div className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0">
-          {/* 上传区 */}
+          {/* 上传区 / 拖动定位区 */}
           <div
             onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
+              // 只有在没图片时才是文件拖拽
+              if (!bgUrl) {
+                e.preventDefault();
+                setDragging(true);
+              }
             }}
             onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`relative border-2 border-dashed rounded-lg overflow-hidden cursor-pointer transition-colors ${
+            onDrop={(e) => {
+              if (!bgUrl) onDrop(e);
+            }}
+            onClick={(e) => {
+              // 有图时点击不触发上传（避免误触）
+              if (!bgUrl) fileInputRef.current?.click();
+            }}
+            className={`relative border-2 border-dashed rounded-lg overflow-hidden transition-colors ${
               dragging
                 ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30"
-                : "border-gray-200 dark:border-gray-700 hover:border-indigo-400"
+                : bgUrl
+                ? "border-transparent"
+                : "border-gray-200 dark:border-gray-700 hover:border-indigo-400 cursor-pointer"
             }`}
           >
             {bgUrl ? (
-              <div
-                className="aspect-video bg-cover bg-center"
-                style={{ backgroundImage: `url(${bgUrl})` }}
-              >
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors">
-                  <div className="opacity-0 hover:opacity-100 transition-opacity flex items-center gap-2 text-white text-sm font-medium">
-                    <Upload className="w-4 h-4" />
-                    更换图片
-                  </div>
-                </div>
-              </div>
+              <BackgroundPositionEditor
+                bgUrl={bgUrl}
+                position={settings.position}
+                onChange={(pos) => updateSettings({ position: pos })}
+                onChangeImage={() => fileInputRef.current?.click()}
+              />
             ) : (
               <div className="aspect-video flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
                 <Upload className="w-8 h-8 mb-2" />
@@ -236,4 +241,122 @@ export function BackgroundSettings({
   // 用 Portal 渲染到 body 层级，避免被 Header 的 backdrop-blur 限制
   if (!mounted) return null;
   return createPortal(modal, document.body);
+}
+
+// 可拖动的背景定位编辑器
+function BackgroundPositionEditor({
+  bgUrl,
+  position,
+  onChange,
+  onChangeImage,
+}: {
+  bgUrl: string;
+  position: { x: number; y: number };
+  onChange: (pos: { x: number; y: number }) => void;
+  onChangeImage: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const updateFromEvent = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const x = ((clientX - rect.left) / rect.width) * 100;
+      const y = ((clientY - rect.top) / rect.height) * 100;
+      onChange({
+        x: Math.max(0, Math.min(100, x)),
+        y: Math.max(0, Math.min(100, y)),
+      });
+    },
+    [onChange]
+  );
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    updateFromEvent(e.clientX, e.clientY);
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    updateFromEvent(e.clientX, e.clientY);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  const reset = () => onChange({ x: 50, y: 50 });
+
+  return (
+    <div className="space-y-2">
+      <div
+        ref={ref}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        className="relative aspect-video bg-cover bg-no-repeat rounded-lg select-none touch-none"
+        style={{
+          backgroundImage: `url(${bgUrl})`,
+          backgroundPosition: `${position.x}% ${position.y}%`,
+          cursor: isDragging ? "grabbing" : "move",
+        }}
+      >
+        {/* 网格辅助线 */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-y-0 left-1/3 w-px bg-white/30" />
+          <div className="absolute inset-y-0 left-2/3 w-px bg-white/30" />
+          <div className="absolute inset-x-0 top-1/3 h-px bg-white/30" />
+          <div className="absolute inset-x-0 top-2/3 h-px bg-white/30" />
+        </div>
+
+        {/* 中心准星（焦点位置） */}
+        <div
+          className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${position.x}%`, top: `${position.y}%` }}
+        >
+          <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center bg-black/20">
+            <Move className="w-4 h-4 text-white" />
+          </div>
+        </div>
+
+        {/* 提示文字 */}
+        <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+          <span className="px-2 py-1 rounded bg-black/50 text-white text-xs flex items-center gap-1">
+            <Move className="w-3 h-3" />
+            拖动定位焦点
+          </span>
+        </div>
+      </div>
+
+      {/* 控制按钮 */}
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-gray-500 dark:text-gray-400">
+          焦点位置: {Math.round(position.x)}%, {Math.round(position.y)}%
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <RotateCcw className="w-3 h-3" />
+            居中
+          </button>
+          <button
+            type="button"
+            onClick={onChangeImage}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
+          >
+            <Upload className="w-3 h-3" />
+            更换
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

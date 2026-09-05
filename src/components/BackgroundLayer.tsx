@@ -16,9 +16,10 @@ export function BackgroundLayer() {
     >
       {/* 背景图 */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-no-repeat"
         style={{
           backgroundImage: `url(${bgUrl})`,
+          backgroundPosition: `${settings.position.x}% ${settings.position.y}%`,
           opacity: settings.opacity,
           filter: settings.blur > 0 ? `blur(${settings.blur}px)` : undefined,
           transform: settings.blur > 0 ? "scale(1.05)" : undefined, // 模糊时轻微放大避免边缘白边

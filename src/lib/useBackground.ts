@@ -7,16 +7,23 @@ const STORE = "backgrounds";
 const SETTINGS_KEY = "bg-current-settings";
 const ID_KEY = "bg-current-id";
 
+export type BgPosition = {
+  x: number; // 0-100, 水平位置百分比
+  y: number; // 0-100, 垂直位置百分比
+};
+
 export type BgSettings = {
   opacity: number; // 背景图透明度 0-1
   blur: number; // 模糊度 px
   overlayOpacity: number; // 蒙层不透明度（保证文字可读）
+  position: BgPosition; // 背景图焦点位置（拖动调节）
 };
 
 const DEFAULT_SETTINGS: BgSettings = {
   opacity: 0.4,
   blur: 0,
   overlayOpacity: 0.3,
+  position: { x: 50, y: 50 },
 };
 
 // 模块级共享 state - 所有 useBackground() 调用共享同一份

@@ -9,7 +9,7 @@ import { Search } from "@/components/Search";
 import { BackgroundButton } from "@/components/BackgroundButton";
 
 const SITE_OPTIONS = [
-  { id: "intl", label: "国际版", hint: "International" },
+  { id: "intl", label: "国际站", hint: "International" },
   { id: "cn", label: "中国站", hint: "China" },
   { id: "en", label: "Global - English", hint: "EN" },
 ];
@@ -70,7 +70,7 @@ export function Header() {
                 aria-haspopup="menu"
                 aria-expanded={siteMenuOpen}
               >
-                国际版
+                国际站
                 <ChevronDown className={`w-2.5 h-2.5 transition-transform ${siteMenuOpen ? "rotate-180" : ""}`} />
               </button>
               {siteMenuOpen && (

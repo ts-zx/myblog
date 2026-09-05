@@ -2,15 +2,23 @@
 
 import Link from "next/link";
 import { useTheme } from "@/lib/useTheme";
-import { useEffect, useState } from "react";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Sun, Moon, Menu, X, ChevronDown } from "lucide-react";
 import { siteConfig } from "@/app/site.config";
 import { Search } from "@/components/Search";
 import { BackgroundButton } from "@/components/BackgroundButton";
 
+const SITE_OPTIONS = [
+  { id: "intl", label: "国际版", hint: "International" },
+  { id: "cn", label: "中国站", hint: "China" },
+  { id: "en", label: "Global - English", hint: "EN" },
+];
+
 export function Header() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [siteMenuOpen, setSiteMenuOpen] = useState(false);
+  const siteMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => setMounted(true), []);
   const { resolvedTheme, toggle } = useTheme();
 
@@ -28,22 +36,67 @@ export function Header() {
     };
   }, [mobileMenuOpen]);
 
+  // 点击外部关闭站点下拉
+  useEffect(() => {
+    if (!siteMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (siteMenuRef.current && !siteMenuRef.current.contains(e.target as Node)) {
+        setSiteMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [siteMenuOpen]);
+
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
         <div className="mx-auto max-w-5xl px-6 h-14 flex items-center justify-between gap-4">
-          {/* 左侧：Logo（含下标角标"国际版"，O₂ 样式） */}
-          <Link
-            href="/"
-            className="inline-flex items-baseline gap-2 font-semibold tracking-tight whitespace-nowrap"
-          >
-            <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 self-center" />
-            <span>{siteConfig.name}</span>
-            {/* O₂ 样式下标角标 - 同一行，小一号 */}
-            <sub className="text-[10px] text-gray-400 dark:text-gray-500 font-normal tracking-normal ml-0.5 select-none">
-              国际版
-            </sub>
-          </Link>
+          {/* 左侧：Logo + 站点切换下拉 */}
+          <div className="flex items-baseline gap-3 whitespace-nowrap">
+            <Link
+              href="/"
+              className="inline-flex items-baseline gap-2 font-semibold tracking-tight"
+            >
+              <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 self-center" />
+              <span>{siteConfig.name}</span>
+            </Link>
+            {/* 站点切换下拉 */}
+            <div className="relative" ref={siteMenuRef}>
+              <button
+                type="button"
+                onClick={() => setSiteMenuOpen(!siteMenuOpen)}
+                className="inline-flex items-center gap-0.5 text-[10px] text-gray-400 dark:text-gray-500 font-normal tracking-normal hover:text-gray-600 dark:hover:text-gray-300 transition-colors translate-y-0.5"
+                aria-haspopup="menu"
+                aria-expanded={siteMenuOpen}
+              >
+                国际版
+                <ChevronDown className={`w-2.5 h-2.5 transition-transform ${siteMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              {siteMenuOpen && (
+                <div
+                  className="absolute left-0 top-full mt-1.5 min-w-[160px] bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50"
+                  role="menu"
+                >
+                  {SITE_OPTIONS.map((opt, i) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setSiteMenuOpen(false)}
+                      className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors"
+                      role="menuitem"
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-indigo-500" : "bg-transparent"}`} />
+                      <span className="flex-1">{opt.label}</span>
+                      {i === 0 && (
+                        <span className="text-[10px] text-indigo-600 dark:text-indigo-400">当前</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* 右侧：导航 + 按钮组 */}
           <div className="flex items-center gap-4 sm:gap-6">

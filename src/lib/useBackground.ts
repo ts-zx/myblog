@@ -17,6 +17,7 @@ export type BgSettings = {
   blur: number; // 模糊度 px
   overlayOpacity: number; // 蒙层不透明度（保证文字可读）
   position: BgPosition; // 背景图焦点位置（拖动调节）
+  zoom: number; // 1 = 100% 覆盖（默认），>1 放大，<1 缩小
 };
 
 const DEFAULT_SETTINGS: BgSettings = {
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS: BgSettings = {
   blur: 0,
   overlayOpacity: 0.3,
   position: { x: 50, y: 50 },
+  zoom: 1,
 };
 
 // 模块级共享 state - 所有 useBackground() 调用共享同一份

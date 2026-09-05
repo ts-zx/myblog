@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Image as ImageIcon, X, Upload, Trash2, Info, Move, RotateCcw } from "lucide-react";
+import { Image as ImageIcon, X, Upload, Trash2, Info, Move, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { useBackground } from "@/lib/useBackground";
 
 export function BackgroundSettings({
@@ -115,7 +115,9 @@ export function BackgroundSettings({
               <BackgroundPositionEditor
                 bgUrl={bgUrl}
                 position={settings.position}
+                zoom={settings.zoom}
                 onChange={(pos) => updateSettings({ position: pos })}
+                onChangeZoom={(z) => updateSettings({ zoom: z })}
                 onChangeImage={() => fileInputRef.current?.click()}
               />
             ) : (
@@ -247,12 +249,16 @@ export function BackgroundSettings({
 function BackgroundPositionEditor({
   bgUrl,
   position,
+  zoom,
   onChange,
+  onChangeZoom,
   onChangeImage,
 }: {
   bgUrl: string;
   position: { x: number; y: number };
+  zoom: number;
   onChange: (pos: { x: number; y: number }) => void;
+  onChangeZoom: (zoom: number) => void;
   onChangeImage: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -289,7 +295,18 @@ function BackgroundPositionEditor({
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   };
 
-  const reset = () => onChange({ x: 50, y: 50 });
+  const reset = () => {
+    onChange({ x: 50, y: 50 });
+    onChangeZoom(1);
+  };
+
+  // 滚轮缩放
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    const newZoom = Math.max(0.5, Math.min(3, zoom + delta));
+    onChangeZoom(newZoom);
+  };
 
   return (
     <div className="space-y-2">
@@ -299,10 +316,12 @@ function BackgroundPositionEditor({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        className="relative aspect-video bg-cover bg-no-repeat rounded-lg select-none touch-none"
+        onWheel={handleWheel}
+        className="relative aspect-video bg-no-repeat rounded-lg select-none touch-none overflow-hidden"
         style={{
           backgroundImage: `url(${bgUrl})`,
           backgroundPosition: `${position.x}% ${position.y}%`,
+          backgroundSize: `${zoom * 100}%`,
           cursor: isDragging ? "grabbing" : "move",
         }}
       >
@@ -328,15 +347,47 @@ function BackgroundPositionEditor({
         <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
           <span className="px-2 py-1 rounded bg-black/50 text-white text-xs flex items-center gap-1">
             <Move className="w-3 h-3" />
-            拖动定位焦点
+            拖动定位 / 滚轮缩放
           </span>
         </div>
+      </div>
+
+      {/* 缩放控制 */}
+      <div className="flex items-center gap-2 text-xs">
+        <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 w-12">缩放</span>
+        <button
+          type="button"
+          onClick={() => onChangeZoom(Math.max(0.5, zoom - 0.1))}
+          className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300"
+          aria-label="缩小"
+        >
+          <ZoomOut className="w-3 h-3" />
+        </button>
+        <input
+          type="range"
+          min="50"
+          max="300"
+          value={Math.round(zoom * 100)}
+          onChange={(e) => onChangeZoom(Number(e.target.value) / 100)}
+          className="flex-1 accent-indigo-500"
+        />
+        <button
+          type="button"
+          onClick={() => onChangeZoom(Math.min(3, zoom + 0.1))}
+          className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300"
+          aria-label="放大"
+        >
+          <ZoomIn className="w-3 h-3" />
+        </button>
+        <span className="text-gray-500 dark:text-gray-400 w-10 text-right tabular-nums">
+          {Math.round(zoom * 100)}%
+        </span>
       </div>
 
       {/* 控制按钮 */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-500 dark:text-gray-400">
-          焦点位置: {Math.round(position.x)}%, {Math.round(position.y)}%
+          焦点: {Math.round(position.x)}%, {Math.round(position.y)}%
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -345,7 +396,7 @@ function BackgroundPositionEditor({
             className="inline-flex items-center gap-1 px-2 py-1 rounded text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <RotateCcw className="w-3 h-3" />
-            居中
+            重置
           </button>
           <button
             type="button"

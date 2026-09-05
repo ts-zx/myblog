@@ -308,6 +308,8 @@ function BackgroundPositionEditor({
     onChangeZoom(newZoom);
   };
 
+  const focalPoint = `${position.x}% ${position.y}%`;
+
   return (
     <div className="space-y-2">
       <div
@@ -317,14 +319,24 @@ function BackgroundPositionEditor({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onWheel={handleWheel}
-        className="relative aspect-video bg-no-repeat rounded-lg select-none touch-none overflow-hidden"
-        style={{
-          backgroundImage: `url(${bgUrl})`,
-          backgroundPosition: `${position.x}% ${position.y}%`,
-          backgroundSize: `${zoom * 100}%`,
-          cursor: isDragging ? "grabbing" : "move",
-        }}
+        className="relative aspect-video rounded-lg select-none touch-none overflow-hidden bg-gray-200 dark:bg-gray-800"
+        style={{ cursor: isDragging ? "grabbing" : "move" }}
       >
+        {/* 预览图 - 用 img + object-fit cover，跟实际背景同款逻辑 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={bgUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full"
+          draggable={false}
+          style={{
+            objectFit: "cover",
+            objectPosition: focalPoint,
+            transform: `scale(${zoom})`,
+            transformOrigin: focalPoint,
+          }}
+        />
+
         {/* 网格辅助线 */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-y-0 left-1/3 w-px bg-white/30" />
@@ -333,19 +345,19 @@ function BackgroundPositionEditor({
           <div className="absolute inset-x-0 top-2/3 h-px bg-white/30" />
         </div>
 
-        {/* 中心准星（焦点位置） */}
+        {/* 焦点准星（始终在固定位置，不随缩放移动） */}
         <div
           className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${position.x}%`, top: `${position.y}%` }}
+          style={{ left: focalPoint, top: focalPoint.split(" ")[1] }}
         >
-          <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center bg-black/20">
+          <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center bg-black/30">
             <Move className="w-4 h-4 text-white" />
           </div>
         </div>
 
         {/* 提示文字 */}
         <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
-          <span className="px-2 py-1 rounded bg-black/50 text-white text-xs flex items-center gap-1">
+          <span className="px-2 py-1 rounded bg-black/60 text-white text-xs flex items-center gap-1">
             <Move className="w-3 h-3" />
             拖动定位 / 滚轮缩放
           </span>

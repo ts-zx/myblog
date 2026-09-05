@@ -348,7 +348,7 @@ function BackgroundPositionEditor({
         {/* 焦点准星（始终在固定位置，不随缩放移动） */}
         <div
           className="absolute pointer-events-none -translate-x-1/2 -translate-y-1/2"
-          style={{ left: focalPoint, top: focalPoint.split(" ")[1] }}
+          style={{ left: `${position.x}%`, top: `${position.y}%` }}
         >
           <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center bg-black/30">
             <Move className="w-4 h-4 text-white" />

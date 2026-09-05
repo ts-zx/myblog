@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Image as ImageIcon, X, Upload, Trash2, Info } from "lucide-react";
 import { useBackground } from "@/lib/useBackground";
 
@@ -17,6 +18,11 @@ export function BackgroundSettings({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showRefreshTip, setShowRefreshTip] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleFile = useCallback(
     async (file: File | null | undefined) => {
@@ -51,7 +57,7 @@ export function BackgroundSettings({
 
   if (!open) return null;
 
-  return (
+  const modal = (
     // 外层：fixed 全屏，移动端从顶部 8% 开始，PC 端居中
     <div
       className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 pt-[8vh] sm:pt-4 overflow-y-auto"
@@ -226,4 +232,8 @@ export function BackgroundSettings({
       </div>
     </div>
   );
+
+  // 用 Portal 渲染到 body 层级，避免被 Header 的 backdrop-blur 限制
+  if (!mounted) return null;
+  return createPortal(modal, document.body);
 }

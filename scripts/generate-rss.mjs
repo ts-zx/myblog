@@ -11,12 +11,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 
-// Mirror src/app/site.config.ts — keep in sync
+// 与 src/app/site.config.ts 保持一致
 const SITE = {
-  name: "我的小站",
+  name: "天寿的小站",
   description: "记录、思考、分享",
-  author: "Your Name",
-  url: "https://my-blog.pages.dev", // <-- 改成你的 Pages 域名
+  author: "TSZX.",
+  url: "https://tszx.zh.kg",
   language: "zh-CN",
 };
 

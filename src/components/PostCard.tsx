@@ -2,14 +2,23 @@ import Link from "next/link";
 import { format } from "date-fns";
 import type { Post } from "@/lib/posts";
 
-export function PostCard({ post }: { post: Post }) {
+export function PostCard({
+  post,
+  headingLevel = 2,
+}: {
+  post: Post;
+  /** 标题层级：嵌套在某个 h2 区块内时传 3，独立列表传 2 */
+  headingLevel?: 2 | 3;
+}) {
   const { frontmatter, slug, readingMinutes } = post;
+  const Heading = headingLevel === 3 ? "h3" : "h2";
+
   return (
     <article className="group py-6 border-b last:border-b-0">
       <Link href={`/posts/${slug}`} className="block">
-        <h2 className="text-xl font-semibold tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+        <Heading className="text-xl font-semibold tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
           {frontmatter.title}
-        </h2>
+        </Heading>
       </Link>
       <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         {/* 移动端：日期+阅读时间一行，#tags 单独一行；PC 端：原样一行 */}

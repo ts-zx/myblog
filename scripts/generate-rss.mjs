@@ -13,10 +13,10 @@ const root = path.resolve(__dirname, "..");
 
 // Mirror src/app/site.config.ts — keep in sync
 const SITE = {
-  name: "天寿的小站",
+  name: "我的小站",
   description: "记录、思考、分享",
-  author: "TSZX.",
-  url: "https://tszx.zh.kg", // <-- 改成你的 Pages 域名
+  author: "Your Name",
+  url: "https://my-blog.pages.dev", // <-- 改成你的 Pages 域名
   language: "zh-CN",
 };
 
@@ -67,13 +67,14 @@ const itemsXml = items
   .join("");
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>${escape(SITE.name)}</title>
     <description>${escape(SITE.description)}</description>
     <link>${escape(SITE.url)}</link>
     <atom:link href="${escape(SITE.url)}/rss.xml" rel="self" type="application/rss+xml" />
     <language>${escape(SITE.language)}</language>
+    <generator>Next.js</generator>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     ${itemsXml}
   </channel>

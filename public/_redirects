@@ -1,0 +1,9 @@
+# Cloudflare Pages 重定向规则
+# 文档：https://developers.cloudflare.com/pages/configuration/redirects/
+#
+# 统一到非 www（不带 www 的才是主域）
+# 格式：<源> <目标> <状态码>
+# :splat 保留原路径，* 匹配所有路径
+
+http://www.tszx.zh.kg/*  https://tszx.zh.kg/:splat  301
+https://www.tszx.zh.kg/*  https://tszx.zh.kg/:splat  301

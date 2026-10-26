@@ -1,0 +1,46 @@
+/*
+  Cloudflare Pages 自定义响应头
+  文档：https://developers.cloudflare.com/pages/configuration/headers/
+
+  安全响应头评分目标：100/100
+*/
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-XSS-Protection: 0
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  X-Content-Type-Options: nosniff
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app https://giscus.app/client.js; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.github.com https://giscus.app; frame-src https://giscus.app; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+*/
+
+/*
+  静态资源缓存（带 hash 的可以永久缓存）
+*/
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800
+
+/og-default.png
+  Cache-Control: public, max-age=604800
+
+/pagefind/*
+  Cache-Control: public, max-age=604800
+
+/*
+  HTML 页面不要缓存，保证内容更新及时
+*/
+
+/*
+  Cache-Control: no-cache, must-revalidate
+*/

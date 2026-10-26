@@ -10,6 +10,7 @@ import { siteConfig } from "@/app/site.config";
 import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { TwikooComments } from "@/components/TwikooComments";
 
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
@@ -30,6 +31,12 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
       authors: [{ name: siteConfig.author }],
       keywords: frontmatter.tags,
       alternates: { canonical: url },
+      // SEO: 显式声明索引策略
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      },
       openGraph: {
         type: "article",
         title: frontmatter.title,
@@ -38,6 +45,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
         siteName: siteConfig.name,
         locale: "zh_CN",
         publishedTime: new Date(frontmatter.date).toISOString(),
+        modifiedTime: new Date(frontmatter.date).toISOString(),
         authors: [siteConfig.author],
         tags: frontmatter.tags,
         images: [{ url: ogImage, width: 1200, height: 630, alt: frontmatter.title }],
@@ -62,10 +70,42 @@ export default function PostPage({ params }: { params: { slug: string } }) {
     notFound();
   }
   const { frontmatter, content, readingMinutes } = post;
+  const url = `${siteConfig.url}/posts/${post.slug}`;
+
+  // SEO: 文章级结构化数据 (BlogPosting)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${url}#post`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    headline: frontmatter.title,
+    description: frontmatter.description ?? "",
+    url,
+    datePublished: new Date(frontmatter.date).toISOString(),
+    dateModified: new Date(frontmatter.date).toISOString(),
+    inLanguage: "zh-CN",
+    wordCount: content.length,
+    timeRequired: `PT${readingMinutes}M`,
+    keywords: (frontmatter.tags ?? []).join(", "),
+    author: { "@type": "Person", name: siteConfig.author, url: siteConfig.url },
+    publisher: { "@type": "Person", name: siteConfig.author, url: siteConfig.url },
+    image: `${siteConfig.url}/og-default.png`,
+    ...(frontmatter.tags?.length
+      ? {
+          keywords: frontmatter.tags,
+          articleSection: frontmatter.tags[0],
+        }
+      : {}),
+  };
 
   return (
     <article className="py-10">
       <ReadingProgress />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/posts" className="text-sm text-gray-500 hover:text-indigo-500">
         ← 返回所有文章
       </Link>
@@ -122,7 +162,12 @@ export default function PostPage({ params }: { params: { slug: string } }) {
         </div>
       )}
 
-      {siteConfig.giscus?.enabled && <GiscusComments />}
+      {/* 评论系统：可在 site.config.ts 里切换 twikoo / giscus */}
+      {siteConfig.commentSystem === "twikoo" ? (
+        siteConfig.twikoo?.enabled && <TwikooComments />
+      ) : (
+        siteConfig.giscus?.enabled && <GiscusComments />
+      )}
 
       <footer className="mt-8 pt-6 border-t text-sm text-gray-500">
         <Link href="/posts" className="hover:text-indigo-500">

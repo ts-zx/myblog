@@ -66,12 +66,12 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setSiteMenuOpen(!siteMenuOpen)}
-                className="inline-flex items-center gap-0.5 text-[10px] text-gray-400 dark:text-gray-500 font-normal tracking-normal hover:text-gray-600 dark:hover:text-gray-300 transition-colors translate-y-0.5"
+                className="inline-flex items-center gap-0.5 px-1.5 py-1 -my-1 rounded text-xs text-gray-400 dark:text-gray-500 font-normal tracking-normal hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 aria-haspopup="menu"
                 aria-expanded={siteMenuOpen}
               >
                 国际站
-                <ChevronDown className={`w-2.5 h-2.5 transition-transform ${siteMenuOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3 h-3 transition-transform ${siteMenuOpen ? "rotate-180" : ""}`} />
               </button>
               {siteMenuOpen && (
                 <div

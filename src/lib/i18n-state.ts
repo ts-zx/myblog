@@ -4,7 +4,6 @@ import { siteConfig } from "@/app/site.config";
 
 export type { Locale };
 
-const STORAGE_KEY = "blog-locale";
 
 let _currentLocale: Locale = DEFAULT_LOCALE;
 const _listeners = new Set<() => void>();
@@ -15,13 +14,29 @@ export type SiteId = keyof typeof siteConfig.sites;
 export function getCurrentSite(): SiteId {
   if (typeof window === "undefined") return siteConfig.defaultSite;
   const host = window.location.hostname.toLowerCase();
-  const sites = siteConfig.sites as Record<string, { hosts: string[] }>;
-  for (const [id, cfg] of Object.entries(sites)) {
-    if (cfg.hosts.some((h) => host === h || host.endsWith(`.${h}`))) {
-      return id as SiteId;
+  const entries = Object.entries(siteConfig.sites) as [
+    SiteId,
+    (typeof siteConfig.sites)[SiteId]
+  ][];
+
+  // 1. 精确匹配优先（www.tszx.zh.kg 精确匹配 intl 站点）
+  for (const [id, cfg] of entries) {
+    if (cfg.hosts.some((h) => host === h.toLowerCase())) {
+      return id;
     }
   }
-  return siteConfig.defaultSite;
+
+  // 2. 后缀匹配（子域名兜底），取 hosts 最长的那个，避免 www 抢了裸域
+  let best: { id: SiteId; len: number } | null = null;
+  for (const [id, cfg] of entries) {
+    for (const h of cfg.hosts) {
+      const hl = h.toLowerCase();
+      if (host.endsWith(`.${hl}`) && (!best || hl.length > best.len)) {
+        best = { id, len: hl.length };
+      }
+    }
+  }
+  return best?.id ?? siteConfig.defaultSite;
 }
 
 /** 当前站点的默认语言 */
@@ -44,6 +59,11 @@ export function buildSiteUrl(siteId: SiteId, locale: Locale): string {
   return url.toString();
 }
 
+// localStorage 按站点分开存，避免两个站的语言互相污染
+function storageKey(site?: SiteId): string {
+  return `blog-locale:${site ?? getCurrentSite()}`;
+}
+
 // 客户端初始化
 if (typeof window !== "undefined") {
   try {
@@ -51,8 +71,9 @@ if (typeof window !== "undefined") {
     const params = new URLSearchParams(window.location.search);
     const fromUrl = params.get("lang");
 
-    // 2. 其次 localStorage（同站点内切换记忆）
-    const stored = localStorage.getItem(STORAGE_KEY);
+    // 2. 其次本站点的 localStorage（用户在本站主动选过的语言）
+    const site = getCurrentSite();
+    const stored = localStorage.getItem(storageKey(site));
 
     // 3. 最后按站点默认语言
     const siteDefault = getSiteDefaultLocale();
@@ -87,7 +108,7 @@ export function setLocale(newLocale: Locale) {
   _currentLocale = newLocale;
   if (typeof window !== "undefined") {
     try {
-      localStorage.setItem(STORAGE_KEY, newLocale);
+      localStorage.setItem(storageKey(), newLocale);
       document.documentElement.lang = newLocale;
     } catch {}
   }

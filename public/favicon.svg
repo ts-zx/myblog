@@ -4,14 +4,18 @@
       <stop offset="0%" stop-color="#141B2D"/>
       <stop offset="100%" stop-color="#0A0E18"/>
     </linearGradient>
-  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.3"/>
-    <stop offset="55%" stop-color="#FBBF24" stop-opacity="0.066"/>
-    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.28"/>
+      <stop offset="55%" stop-color="#FBBF24" stop-opacity="0.062"/>
+      <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    </radialGradient>
+  <radialGradient id="star" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#FEF3C7"/>
+    <stop offset="45%" stop-color="#FCD34D"/>
+    <stop offset="100%" stop-color="#F59E0B"/>
   </radialGradient>
   </defs>
   <rect width="64" height="64" rx="14.1" fill="url(#bg)"/>
   <rect width="64" height="64" fill="url(#glow)"/>
-  <path d="M32.0 11.8 L36.9 27.1 L52.2 32.0 L36.9 36.9 L32.0 52.2 L27.1 36.9 L11.8 32.0 L27.1 27.1 Z" fill="#FCD34D"/>
-  <path d="M32.0 21.8 L34.5 29.5 L42.2 32.0 L34.5 34.5 L32.0 42.2 L29.5 34.5 L21.8 32.0 L29.5 29.5 Z" fill="#FEF3C7"/>
+  <path d="M32.0 11.8 L36.9 27.1 L52.2 32.0 L36.9 36.9 L32.0 52.2 L27.1 36.9 L11.8 32.0 L27.1 27.1 Z" fill="url(#star)"/>
 </svg>

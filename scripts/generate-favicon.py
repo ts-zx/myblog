@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-生成 favicon 全套资源 - A4 墨底琥珀（优化版）
-用法: python3 scripts/generate-favicon.py [v1|v2|v3]
+生成 favicon 全套资源 - 墨底琥珀星
+用法: python3 scripts/generate-favicon.py [grad|solid|solid-light]
 
-v1 = 光晕层次（推荐）深墨底 + 琥珀星 + 径向光晕 + 亮芯
-v2 = 细环徽章  深墨底 + 琥珀星 + 细圆环
-v3 = 纯墨单星  深墨底 + 琥珀星（极简）
+grad        = 径向渐变星（中心亮 → 边缘深，宝石感）★ 默认
+solid       = 纯色深琥珀 #FBBF24
+solid-light = 纯色浅琥珀 #FCD34D
 """
 from PIL import Image, ImageDraw
 import numpy as np
@@ -33,11 +33,22 @@ def lin_grad(size, c1, c2, angle=45):
     b = np.array(c2, np.float64)
     return (a + (b - a) * t).astype(np.uint8)
 
-def radial_glow(size, center, radius, color, strength):
+def radial_multi(size, stops):
     ys, xs = np.mgrid[0:size, 0:size]
-    d = np.sqrt((xs - center[0]) ** 2 + (ys - center[1]) ** 2) / radius
-    falloff = np.clip(1 - d, 0, 1) ** 2.2
-    return falloff[..., None] * np.array(color, np.float64)[None, None, :] * strength
+    d = np.sqrt((xs - size / 2) ** 2 + (ys - size / 2) ** 2) / (size / 2)
+    t = np.clip(d, 0, 1)
+    pos = np.array([s[0] for s in stops], np.float64)
+    cols = np.array([hx(s[1]) for s in stops], np.float64)
+    out = np.zeros((size, size, 3), np.float64)
+    for ch in range(3):
+        out[..., ch] = np.interp(t, pos, cols[:, ch])
+    return out.astype(np.uint8)
+
+def glow_layer(size, color, strength, radius=0.62):
+    ys, xs = np.mgrid[0:size, 0:size]
+    d = np.sqrt((xs - size / 2) ** 2 + (ys - size / 2) ** 2) / (size * radius)
+    fall = np.clip(1 - d, 0, 1) ** 2.2
+    return fall[..., None] * np.array(color, np.float64)[None, None, :] * strength
 
 def star_pts(cx, cy, ro, ri, n=4, rot=-90):
     p = []
@@ -47,37 +58,34 @@ def star_pts(cx, cy, ro, ri, n=4, rot=-90):
         p.append((cx + r * math.cos(ang), cy + r * math.sin(ang)))
     return p
 
+# 配色方案
 VARIANTS = {
-    "v1": dict(bg1="#141B2D", bg2="#0A0E18", star="#FCD34D", core="#FEF3C7",
-               glow=0.30, glow_r=0.62, ro=0.315, ri=0.108, core_ro=0.16, core_ri=0.055, ring=0),
-    "v2": dict(bg1="#141B2D", bg2="#0A0E18", star="#FBBF24", core=None,
-               glow=0.16, glow_r=0.70, ro=0.235, ri=0.082, core_ro=0, core_ri=0, ring=0.028),
-    "v3": dict(bg1="#111827", bg2="#0B1220", star="#FBBF24", core=None,
-               glow=0.0, glow_r=0.6, ro=0.30, ri=0.103, core_ro=0, core_ri=0, ring=0),
+    "grad":        dict(stops=[(0.0, "#FEF3C7"), (0.45, "#FCD34D"), (1.0, "#F59E0B")], solid=None),
+    "solid":       dict(stops=None, solid="#FBBF24"),
+    "solid-light": dict(stops=None, solid="#FCD34D"),
 }
+
+BG1, BG2 = "#141B2D", "#0A0E18"
+STAR_RO, STAR_RI = 0.315, 0.108
 
 
 def build(size, v):
     c = VARIANTS[v]
     n = size * S
-    bg = lin_grad(n, hx(c["bg1"]), hx(c["bg2"])).astype(np.float64)
-    if c["glow"] > 0:
-        g = radial_glow(n, (n / 2, n / 2), n * c["glow_r"], hx("#FBBF24"), c["glow"])
-        bg = np.clip(bg + g, 0, 255).astype(np.uint8)
+    bg = lin_grad(n, hx(BG1), hx(BG2)).astype(np.float64)
+    bg = np.clip(bg + glow_layer(n, hx("#FBBF24"), 0.28), 0, 255).astype(np.uint8)
     img = Image.fromarray(bg, "RGB").convert("RGBA")
 
     mask = Image.new("L", (n, n), 0)
-    dr = ImageDraw.Draw(mask)
-    if c["ring"]:
-        dr.ellipse([n * 0.16, n * 0.16, n * 0.84, n * 0.84],
-                   outline=255, width=max(1, int(n * c["ring"])))
-    dr.polygon(star_pts(n / 2, n / 2, n * c["ro"], n * c["ri"]), fill=255)
-    img.paste(hx(c["star"]) + (255,), (0, 0), mask)
+    ImageDraw.Draw(mask).polygon(star_pts(n / 2, n / 2, n * STAR_RO, n * STAR_RI), fill=255)
 
-    if c["core"]:
-        m2 = Image.new("L", (n, n), 0)
-        ImageDraw.Draw(m2).polygon(star_pts(n / 2, n / 2, n * c["core_ro"], n * c["core_ri"]), fill=255)
-        img.paste(hx(c["core"]) + (255,), (0, 0), m2)
+    if c["stops"] is None:
+        layer = Image.new("RGBA", (n, n), hx(c["solid"]) + (255,))
+    else:
+        g = radial_multi(n, c["stops"])
+        layer = Image.fromarray(g, "RGB").convert("RGBA")
+
+    img.paste(layer, (0, 0), mask)
 
     rm = Image.new("L", (n, n), 0)
     ImageDraw.Draw(rm).rounded_rectangle([0, 0, n - 1, n - 1], radius=int(n * 0.22), fill=255)
@@ -87,51 +95,45 @@ def build(size, v):
 
 def svg_of(v):
     c = VARIANTS[v]
-    pts = star_pts(32, 32, 64 * c["ro"], 64 * c["ri"])
+    pts = star_pts(32, 32, 64 * STAR_RO, 64 * STAR_RI)
     path = "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts) + " Z"
 
-    core = ""
-    if c["core"]:
-        cpts = star_pts(32, 32, 64 * c["core_ro"], 64 * c["core_ri"])
-        core = f'\n  <path d="M' + " L".join(f"{x:.1f} {y:.1f}" for x, y in cpts) + ' Z" fill="' + c["core"] + '"/>'
-
-    ring = ""
-    if c["ring"]:
-        w = round(64 * c["ring"], 1)
-        ring = f'\n  <circle cx="32" cy="32" r="21.8" fill="none" stroke="{c["star"]}" stroke-width="{w}"/>'
-
-    glow = ""
-    if c["glow"] > 0:
-        o1 = round(c["glow"], 3)
-        o2 = round(c["glow"] * 0.22, 3)
-        glow = f'''
-  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#FBBF24" stop-opacity="{o1}"/>
-    <stop offset="55%" stop-color="#FBBF24" stop-opacity="{o2}"/>
-    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    if c["stops"] is None:
+        star_def = ""
+        star_fill = c["solid"]
+    else:
+        stops = "\n".join(
+            f'    <stop offset="{int(p*100)}%" stop-color="{col}"/>' for p, col in c["stops"]
+        )
+        star_def = f'''
+  <radialGradient id="star" cx="50%" cy="50%" r="50%">
+{stops}
   </radialGradient>'''
-
-    glow_rect = ''
-    if c["glow"] > 0:
-        glow_rect = '\n  <rect width="64" height="64" fill="url(#glow)"/>'
+        star_fill = "url(#star)"
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="{c['bg1']}"/>
-      <stop offset="100%" stop-color="{c['bg2']}"/>
-    </linearGradient>{glow}
+      <stop offset="0%" stop-color="{BG1}"/>
+      <stop offset="100%" stop-color="{BG2}"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.28"/>
+      <stop offset="55%" stop-color="#FBBF24" stop-opacity="0.062"/>
+      <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    </radialGradient>{star_def}
   </defs>
-  <rect width="64" height="64" rx="14.1" fill="url(#bg)"/>{glow_rect}{ring}
-  <path d="{path}" fill="{c['star']}"/>{core}
+  <rect width="64" height="64" rx="14.1" fill="url(#bg)"/>
+  <rect width="64" height="64" fill="url(#glow)"/>
+  <path d="{path}" fill="{star_fill}"/>
 </svg>
 '''
 
 
 if __name__ == "__main__":
-    pick = (sys.argv[1] if len(sys.argv) > 1 else "v1").lower()
+    pick = (sys.argv[1] if len(sys.argv) > 1 else "grad").lower()
     if pick not in VARIANTS:
-        print(f"❌ 选项必须是 v1/v2/v3，收到 {pick}")
+        print(f"❌ 选项必须是 grad/solid/solid-light，收到 {pick}")
         sys.exit(1)
 
     print(f"🎨 使用方案 {pick}")

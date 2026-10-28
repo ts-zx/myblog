@@ -1,9 +1,11 @@
 # Cloudflare Pages 重定向规则
 # 文档：https://developers.cloudflare.com/pages/configuration/redirects/
 #
-# 统一到非 www（不带 www 的才是主域）
-# 格式：<源> <目标> <状态码>
-# :splat 保留原路径，* 匹配所有路径
+# ⚠️ www.tszx.zh.kg 现在是独立的「国际站」，不做 301 重定向！
+#    - tszx.zh.kg      → 中国站（EdgeOne 加速，默认简体中文）
+#    - www.tszx.zh.kg  → 国际站（CF 直连，默认 English）
+#    站点/语言切换由前端 SiteSwitcher 处理（跨域用 ?lang= 传递）
 
-http://www.tszx.zh.kg/*  https://tszx.zh.kg/:splat  301
-https://www.tszx.zh.kg/*  https://tszx.zh.kg/:splat  301
+# 如果以后想把 www 合并回主域，取消下面两行的注释：
+# http://www.tszx.zh.kg/*   https://tszx.zh.kg/:splat   301
+# https://www.tszx.zh.kg/*  https://tszx.zh.kg/:splat   301

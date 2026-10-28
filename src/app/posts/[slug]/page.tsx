@@ -11,6 +11,12 @@ import { ViewCounter } from "@/components/ViewCounter";
 import { LikeButton } from "@/components/LikeButton";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { TwikooComments } from "@/components/TwikooComments";
+import {
+  PostMeta,
+  PostBackLink,
+  PostFooterLink,
+  CommentsTitle,
+} from "@/components/PostMeta";
 
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
@@ -106,34 +112,15 @@ export default function PostPage({ params }: { params: { slug: string } }) {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link href="/posts" className="text-sm text-gray-500 hover:text-indigo-500">
-        ← 返回所有文章
-      </Link>
+      <PostBackLink />
 
       <header className="mt-6 pb-6 border-b">
         <h1 className="text-4xl font-bold tracking-tight leading-tight">{frontmatter.title}</h1>
-        <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-          {/* 移动端：日期+阅读量一行，#tags 单独一行；PC 端：原样一行 */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-            <div className="flex items-center gap-3 flex-wrap">
-              <time dateTime={frontmatter.date}>{format(new Date(frontmatter.date), "yyyy-MM-dd")}</time>
-              <span>·</span>
-              <span>{readingMinutes} 分钟阅读</span>
-              <span>·</span>
-              <ViewCounter slug={post.slug} />
-            </div>
-            {frontmatter.tags && frontmatter.tags.length > 0 && (
-              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <span className="hidden sm:inline">·</span>
-                {frontmatter.tags.map((tag) => (
-                  <span key={tag} className="text-indigo-600 dark:text-indigo-400">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        <PostMeta
+          frontmatter={frontmatter}
+          readingMinutes={readingMinutes}
+          slug={post.slug}
+        />
         {frontmatter.description && (
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
             {frontmatter.description}
@@ -170,9 +157,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
       )}
 
       <footer className="mt-8 pt-6 border-t text-sm text-gray-500">
-        <Link href="/posts" className="hover:text-indigo-500">
-          ← 回到文章列表
-        </Link>
+        <PostFooterLink />
       </footer>
     </article>
   );
@@ -207,7 +192,7 @@ function GiscusComments() {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">评论</h3>
+      <CommentsTitle />
       {/* giscus 会自动在这个 div 里渲染评论 iframe */}
       <div className="giscus" dangerouslySetInnerHTML={{ __html: '' }} />
       <script dangerouslySetInnerHTML={{ __html: giscusScript }} />

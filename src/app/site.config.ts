@@ -11,6 +11,34 @@ export const siteConfig = {
     { href: "/posts", label: "文章" },
     { href: "/about", label: "关于" },
   ],
+
+  // ============================================================
+  // 多站点配置 - 按访问域名自动识别显示哪个站点
+  // ============================================================
+  // hosts: 该站点接受的域名（用于浏览器端判断当前在哪个站）
+  // url:   该站点的规范地址（切换站点时跳转用）
+  // defaultLocale: 该站点的默认语言
+  // locales: 该站点支持的语言（切换器里只列出这些）
+  defaultSite: "cn" as "cn" | "intl",
+  sites: {
+    cn: {
+      label: "中国站",
+      description: "中国大陆访问 · EdgeOne 加速",
+      url: "https://tszx.zh.kg",
+      hosts: ["tszx.zh.kg"],
+      defaultLocale: "zh-CN" as const,
+      locales: ["zh-CN", "zh-TW"] as const,
+    },
+    intl: {
+      label: "国际站",
+      description: "海外访问 · Cloudflare 直连",
+      url: "https://www.tszx.zh.kg",
+      hosts: ["www.tszx.zh.kg"],
+      defaultLocale: "en" as const,
+      locales: ["zh-CN", "zh-TW", "en"] as const,
+    },
+  },
+
   // 阅读量统计
   views: {
     enabled: true,

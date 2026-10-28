@@ -1,6 +1,13 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Rss } from "lucide-react";
 import { siteConfig } from "@/app/site.config";
+import {
+  t as translate,
+  subscribeLocale,
+} from "@/lib/i18n-state";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -16,6 +23,10 @@ function GithubIcon({ className }: { className?: string }) {
 }
 
 export function Footer() {
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
+
   const socials: { href: string; label: string; icon: React.ReactNode }[] = [];
   if (siteConfig.github) {
     socials.push({
@@ -34,7 +45,10 @@ export function Footer() {
     <footer className="mt-20 border-t">
       <div className="mx-auto max-w-5xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div>
-          © {new Date().getFullYear()} {siteConfig.author} · Powered by Next.js
+          {t("footer.copyright", {
+            year: new Date().getFullYear(),
+            author: siteConfig.author,
+          })}
         </div>
         <div className="flex items-center gap-5">
           {socials.map((s) => (

@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import type { Post } from "@/lib/posts";
+import {
+  t as translate,
+  subscribeLocale,
+} from "@/lib/i18n-state";
 
 export function PostCard({
   post,
@@ -12,6 +19,9 @@ export function PostCard({
 }) {
   const { frontmatter, slug, readingMinutes } = post;
   const Heading = headingLevel === 3 ? "h3" : "h2";
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
 
   return (
     <article className="group py-6 border-b last:border-b-0">
@@ -28,13 +38,18 @@ export function PostCard({
               {format(new Date(frontmatter.date), "yyyy-MM-dd")}
             </time>
             <span>·</span>
-            <span>{readingMinutes} 分钟阅读</span>
+            <span>
+              {readingMinutes} {t("post.minRead")}
+            </span>
           </div>
           {frontmatter.tags && frontmatter.tags.length > 0 && (
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               <span className="hidden sm:inline">·</span>
               {frontmatter.tags.map((tag) => (
-                <span key={tag} className="text-indigo-600 dark:text-indigo-400">
+                <span
+                  key={tag}
+                  className="text-indigo-600 dark:text-indigo-400"
+                >
                   #{tag}
                 </span>
               ))}

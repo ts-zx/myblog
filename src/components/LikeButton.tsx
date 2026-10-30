@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
+import { t as translate, subscribeLocale } from "@/lib/i18n-state";
 
 const STORAGE_KEY_PREFIX = "liked:";
 
@@ -9,6 +10,9 @@ export function LikeButton({ slug }: { slug: string }) {
   const [count, setCount] = useState<number | null>(null);
   const [liked, setLiked] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
 
   // Load initial state
   useEffect(() => {
@@ -51,7 +55,7 @@ export function LikeButton({ slug }: { slug: string }) {
           ? "border-pink-300 bg-pink-50 text-pink-600 dark:border-pink-800 dark:bg-pink-950/40 dark:text-pink-400 cursor-default"
           : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-pink-300 hover:text-pink-500 hover:bg-pink-50/50 dark:hover:bg-pink-950/20"
         }`}
-      aria-label={liked ? "已点赞" : "点赞"}
+      aria-label={liked ? t("post.liked") : t("post.likes")}
     >
       <Heart
         className={`w-4 h-4 transition-transform ${liked ? "fill-pink-500 scale-110" : ""}`}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/app/site.config";
+import { t as translate, subscribeLocale } from "@/lib/i18n-state";
 
 // 全局类型
 declare global {
@@ -19,6 +20,9 @@ declare global {
  * - 文档：https://twikoo.js.org/
  */
 export function TwikooComments() {
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(false);
@@ -30,7 +34,7 @@ export function TwikooComments() {
 
     const cfg = siteConfig.twikoo;
     if (!cfg?.enabled || !cfg.envId) {
-      setError("评论系统未配置");
+      setError(t("comments.notConfigured"));
       return;
     }
 
@@ -51,7 +55,7 @@ export function TwikooComments() {
         s.async = true;
         s.crossOrigin = "anonymous";
         s.onload = () => resolve();
-        s.onerror = () => reject(new Error(`脚本加载失败: ${src}`));
+        s.onerror = () => reject(new Error(`${t("comments.scriptFailed")}: ${src}`));
         document.body.appendChild(s);
       });
 
@@ -67,7 +71,7 @@ export function TwikooComments() {
       for (const src of sources) {
         try {
           await loadScript(src);
-          if (!window.twikoo) throw new Error("twikoo 未定义");
+          if (!window.twikoo) throw new Error("twikoo is not defined");
           break;
         } catch (e) {
           lastErr = e;
@@ -76,7 +80,7 @@ export function TwikooComments() {
 
       if (!window.twikoo) {
         setError(
-          lastErr instanceof Error ? lastErr.message : "评论系统加载失败"
+          lastErr instanceof Error ? lastErr.message : t("comments.loadFailed")
         );
         return;
       }
@@ -99,22 +103,20 @@ export function TwikooComments() {
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-        评论
+        {t("comments.title")}
       </h3>
 
       {/* Twikoo 挂载点 */}
       <div id="twikoo" className="min-h-[120px]" />
 
       {!ready && !error && (
-        <p className="text-sm text-gray-400 py-4">评论区加载中…</p>
+        <p className="text-sm text-gray-400 py-4">{t("comments.loading")}</p>
       )}
 
       {error && (
         <div className="text-sm text-gray-500 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 rounded">
-          <p>评论区暂时无法加载：{error}</p>
-          <p className="mt-1 text-xs text-gray-400">
-            刷新页面重试，或通过 GitHub 联系我。
-          </p>
+          <p>{t("comments.loadFailed")}: {error}</p>
+          <p className="mt-1 text-xs text-gray-400">{t("comments.retry")}</p>
         </div>
       )}
     </div>

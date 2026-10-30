@@ -1,37 +1,65 @@
-// 国际化字典
-// 三种语言：简体中文 / 繁体中文 / English
+// 国际化字典 - 三种语言
 // 用法：const { t } = useT(); t("nav.home")
 
 export const translations = {
   "zh-CN": {
-    // 导航
+    // ===== 导航 =====
     "nav.home": "首页",
     "nav.posts": "文章",
     "nav.about": "关于",
-    // 首页
+    // ===== 首页 =====
     "home.greeting": "你好，我是",
     "home.browseAll": "浏览所有文章",
     "home.aboutMe": "关于我",
     "home.latestPosts": "最新文章",
     "home.viewAll": "全部",
-    // 文章卡片
+    "home.emptyTitle": "还没有文章",
+    "home.emptyHint": "去 content/posts 写第一篇吧～",
+    // ===== 文章卡片 / 详情 =====
     "post.readingTime": "分钟阅读",
     "post.minRead": "分钟",
-    // 文章详情
     "post.backToList": "← 返回所有文章",
     "post.backToPosts": "← 回到文章列表",
     "post.comments": "评论",
-    // 搜索
+    "post.views": "阅读量",
+    "post.likes": "点赞",
+    "post.liked": "已点赞",
+    "post.likeFailed": "点赞失败",
+    // ===== 文章列表页 =====
+    "posts.title": "所有文章",
+    "posts.count": "共 {count} 篇",
+    "posts.tagsCount": "共 {count} 篇 · {tags} 个标签",
+    // ===== 关于页 =====
+    "about.title": "关于",
+    "about.heading": "关于我",
+    "about.intro1": "你好，我是 {author}。这里是 {site} —— 一个记录与分享的小角落。",
+    "about.intro2":
+      "我会在这个网站写一些关于技术、生活、阅读、思考的笔记。如果你也对其中某些话题感兴趣，欢迎留言交流。",
+    "about.contact": "联系",
+    "about.email": "邮箱",
+    "about.stack": "本站技术栈",
+    "about.stackDesc": "写作时熟悉的、可嵌入组件",
+    "about.stackItem1": "Next.js 14 + MDX",
+    "about.stackItem2": "TypeScript + Tailwind CSS",
+    "about.stackItem3": "Cloudflare Pages（部署 + Functions）",
+    "about.stackItem4": "Cloudflare KV（阅读量 + 点赞）",
+    "about.stackItem5": "giscus 评论（基于 GitHub Discussions）",
+    "about.commentSystem": "评论系统可在 site.config.ts 里切换",
+    // ===== 搜索 =====
+    "search.title": "搜索",
     "search.placeholder": "搜索文章...",
-    "search.button": "搜索",
-    "search.open": "打开搜索",
-    "search.close": "关闭搜索",
+    "search.loading": "加载搜索索引...",
+    "search.hint": "输入关键词开始搜索，首次打开会加载索引（约 1 秒）",
+    "search.searching": "搜索中...",
     "search.noResults": "没有找到相关文章",
-    "search.placeholderHint": "试试搜索「React」或「生活」",
-    "search.cancel": "取消",
-    // 背景设置
+    "search.close": "关闭",
+    "search.open": "打开",
+    "search.button": "搜索",
+    // ===== 背景设置 =====
     "bg.title": "自定义背景",
     "bg.close": "关闭",
+    "bg.setTitle": "设置自定义背景",
+    "bg.hasTitle": "已设置自定义背景",
     "bg.dragHint": "拖动定位 / 滚轮缩放",
     "bg.opacity": "图片透明度",
     "bg.blur": "模糊度",
@@ -44,60 +72,112 @@ export const translations = {
     "bg.change": "更换",
     "bg.clear": "清除背景",
     "bg.done": "完成",
-    "bg.privacyTip": "🔒 图片只存在你的浏览器本地，不会上传到服务器",
-    // 主题切换
+    "bg.privacyTip": "图片只存在你的浏览器本地，不会上传到服务器",
+    "bg.uploading": "上传中...",
+    "bg.dropHere": "点击或拖拽图片到此处",
+    "bg.formatHint": "支持 jpg/png/webp，最大 5MB",
+    "bg.settings": "设置",
+    "bg.refreshTip":
+      "背景已设置。如果没立刻看到效果，刷新一下页面（或按 F5）。",
+    "bg.actions": "操作",
+    "bg.uploadFailed": "上传失败",
+    "bg.clearConfirm": "确定要清除背景吗？",
+    "bg.notImage": "请选择图片文件",
+    "bg.tooLarge": "图片不能超过 5MB",
+    // ===== 主题 =====
     "theme.toggleLight": "切换到浅色模式",
     "theme.toggleDark": "切换到深色模式",
-    // 菜单
+    // ===== 菜单 =====
     "menu.open": "打开菜单",
     "menu.close": "关闭菜单",
     "menu.title": "菜单",
     "menu.escClose": "按 ESC 关闭",
-    // 站点 / 语言切换
+    // ===== 站点 / 语言切换 =====
     "site.current": "当前",
     "site.switchTo": "切换到",
     "site.language": "语言",
     "site.site": "站点",
-    // 通用
-    "common.minutes": "分钟",
-    "common.minRead": "分钟阅读",
-    // 页脚
+    "site.sites": "站点列表",
+    "site.siteLanguages": "当前站点支持的语言",
+    // ===== 评论区 =====
+    "comments.title": "评论",
+    "comments.loading": "评论区加载中...",
+    "comments.notConfigured": "评论系统未配置",
+    "comments.loadFailed": "评论区暂时无法加载",
+    "comments.retry": "刷新页面重试，或通过 GitHub 联系我。",
+    "comments.scriptFailed": "脚本加载失败",
+    "comments.mount": "评论区挂载点",
+    // ===== 页脚 =====
     "footer.copyright": "© {year} {author} · Powered by Next.js",
-    // 404
+    // ===== 404 =====
     "notFound.title": "404",
-    "notFound.desc": "This page could not be found.",
+    "notFound.desc": "页面不存在",
     "notFound.backHome": "返回首页",
+    // ===== SEO metadata =====
+    "meta.siteTitle": "{name} - {desc}",
+    "meta.siteDescription":
+      "{desc}。这里记录我的学习、生活和思考，分享技术笔记与日常感悟。",
+    "meta.keywords": "个人博客,技术笔记,生活随笔,Next.js,MDX,Cloudflare Pages",
   },
 
   "zh-TW": {
-    // 導覽
+    // ===== 導覽 =====
     "nav.home": "首頁",
     "nav.posts": "文章",
     "nav.about": "關於",
-    // 首頁
+    // ===== 首頁 =====
     "home.greeting": "你好，我是",
     "home.browseAll": "瀏覽所有文章",
     "home.aboutMe": "關於我",
     "home.latestPosts": "最新文章",
     "home.viewAll": "全部",
-    // 文章卡片
+    "home.emptyTitle": "還沒有文章",
+    "home.emptyHint": "去 content/posts 寫第一篇吧～",
+    // ===== 文章卡片 / 詳情 =====
     "post.readingTime": "分鐘閱讀",
     "post.minRead": "分鐘",
-    // 文章詳情
     "post.backToList": "← 返回所有文章",
     "post.backToPosts": "← 回到文章列表",
     "post.comments": "留言",
-    // 搜尋
+    "post.views": "閱讀量",
+    "post.likes": "讚",
+    "post.liked": "已讚",
+    "post.likeFailed": "讚失敗",
+    // ===== 文章列表頁 =====
+    "posts.title": "所有文章",
+    "posts.count": "共 {count} 篇",
+    "posts.tagsCount": "共 {count} 篇 · {tags} 個標籤",
+    // ===== 關於頁 =====
+    "about.title": "關於",
+    "about.heading": "關於我",
+    "about.intro1": "你好，我是 {author}。這裡是 {site} —— 一個記錄與分享的小角落。",
+    "about.intro2":
+      "我會在這個網站寫一些關於技術、生活、閱讀、思考的筆記。如果你也對其中某些話題感興歡，歡迎留言交流。",
+    "about.contact": "聯絡",
+    "about.email": "信箱",
+    "about.stack": "本站技術堆疊",
+    "about.stackDesc": "寫作時熟悉的、可嵌入元件",
+    "about.stackItem1": "Next.js 14 + MDX",
+    "about.stackItem2": "TypeScript + Tailwind CSS",
+    "about.stackItem3": "Cloudflare Pages（部署 + Functions）",
+    "about.stackItem4": "Cloudflare KV（閱讀量 + 讚）",
+    "about.stackItem5": "giscus 留言（基於 GitHub Discussions）",
+    "about.commentSystem": "留言系統可在 site.config.ts 裡切換",
+    // ===== 搜尋 =====
+    "search.title": "搜尋",
     "search.placeholder": "搜尋文章...",
-    "search.button": "搜尋",
-    "search.open": "開啟搜尋",
-    "search.close": "關閉搜尋",
+    "search.loading": "載入搜尋索引...",
+    "search.hint": "輸入關鍵字開始搜尋，首次開啟會載入索引（約 1 秒）",
+    "search.searching": "搜尋中...",
     "search.noResults": "找不到相關文章",
-    "search.placeholderHint": "試試搜尋「React」或「生活」",
-    "search.cancel": "取消",
-    // 背景設定
+    "search.close": "關閉",
+    "search.open": "開啟",
+    "search.button": "搜尋",
+    // ===== 背景設定 =====
     "bg.title": "自訂背景",
     "bg.close": "關閉",
+    "bg.setTitle": "設定自訂背景",
+    "bg.hasTitle": "已設定自訂背景",
     "bg.dragHint": "拖曳定位 / 滾輪縮放",
     "bg.opacity": "圖片透明度",
     "bg.blur": "模糊度",
@@ -110,95 +190,173 @@ export const translations = {
     "bg.change": "更換",
     "bg.clear": "清除背景",
     "bg.done": "完成",
-    "bg.privacyTip": "🔒 圖片只存在你的瀏覽器本機，不會上傳到伺服器",
-    // 主題切換
+    "bg.privacyTip": "圖片只存在你的瀏覽器本機，不會上傳到伺服器",
+    "bg.uploading": "上傳中...",
+    "bg.dropHere": "點擊或拖曳圖片到此處",
+    "bg.formatHint": "支援 jpg/png/webp，最大 5MB",
+    "bg.settings": "設定",
+    "bg.refreshTip":
+      "背景已設定。如果沒立刻看到效果，重新整理頁面（或按 F5）。",
+    "bg.actions": "操作",
+    "bg.uploadFailed": "上傳失敗",
+    "bg.clearConfirm": "確定要清除背景嗎？",
+    "bg.notImage": "請選擇圖片檔案",
+    "bg.tooLarge": "圖片不能超過 5MB",
+    // ===== 主題 =====
     "theme.toggleLight": "切換到淺色模式",
     "theme.toggleDark": "切換到深色模式",
-    // 選單
+    // ===== 選單 =====
     "menu.open": "開啟選單",
     "menu.close": "關閉選單",
     "menu.title": "選單",
     "menu.escClose": "按 ESC 關閉",
-    // 站點 / 語言切換
+    // ===== 站點 / 語言切換 =====
     "site.current": "目前",
     "site.switchTo": "切換到",
     "site.language": "語言",
     "site.site": "站點",
-    // 通用
-    "common.minutes": "分鐘",
-    "common.minRead": "分鐘閱讀",
-    // 頁尾
+    "site.sites": "站點列表",
+    "site.siteLanguages": "目前站點支援的語言",
+    // ===== 留言區 =====
+    "comments.title": "留言",
+    "comments.loading": "留言區載入中...",
+    "comments.notConfigured": "留言系統未設定",
+    "comments.loadFailed": "留言區暫時無法載入",
+    "comments.retry": "重新整理頁面重試，或透過 GitHub 聯絡我。",
+    "comments.scriptFailed": "腳本載入失敗",
+    "comments.mount": "留言區掛載點",
+    // ===== 頁尾 =====
     "footer.copyright": "© {year} {author} · Powered by Next.js",
-    // 404
+    // ===== 404 =====
     "notFound.title": "404",
-    "notFound.desc": "This page could not be found.",
+    "notFound.desc": "頁面不存在",
     "notFound.backHome": "返回首頁",
+    // ===== SEO metadata =====
+    "meta.siteTitle": "{name} - {desc}",
+    "meta.siteDescription":
+      "{desc}。這裡記錄我的學習、生活和思考，分享技術筆記與日常感悟。",
+    "meta.keywords": "個人博客,技術筆記,生活隨筆,Next.js,MDX,Cloudflare Pages",
   },
 
   en: {
-    // Navigation
+    // ===== Navigation =====
     "nav.home": "Home",
     "nav.posts": "Posts",
     "nav.about": "About",
-    // Home
+    // ===== Home =====
     "home.greeting": "Hi, I'm",
     "home.browseAll": "Browse all posts",
     "home.aboutMe": "About me",
     "home.latestPosts": "Latest posts",
     "home.viewAll": "All",
-    // Post card
+    "home.emptyTitle": "No posts yet",
+    "home.emptyHint": "Write your first one in content/posts",
+    // ===== Post card / detail =====
     "post.readingTime": "min read",
     "post.minRead": "min",
-    // Post detail
     "post.backToList": "← Back to all posts",
     "post.backToPosts": "← Back to posts",
     "post.comments": "Comments",
-    // Search
+    "post.views": "Views",
+    "post.likes": "Like",
+    "post.liked": "Liked",
+    "post.likeFailed": "Failed to like",
+    // ===== Posts list =====
+    "posts.title": "All posts",
+    "posts.count": "{count} posts",
+    "posts.tagsCount": "{count} posts · {tags} tags",
+    // ===== About =====
+    "about.title": "About",
+    "about.heading": "About me",
+    "about.intro1":
+      "Hi, I'm {author}. This is {site} — a small corner for notes and sharing.",
+    "about.intro2":
+      "I write about tech, life, reading and thinking here. If any of it interests you, feel free to leave a comment.",
+    "about.contact": "Contact",
+    "about.email": "Email",
+    "about.stack": "Tech stack",
+    "about.stackDesc": "What I write with and embed",
+    "about.stackItem1": "Next.js 14 + MDX",
+    "about.stackItem2": "TypeScript + Tailwind CSS",
+    "about.stackItem3": "Cloudflare Pages (hosting + Functions)",
+    "about.stackItem4": "Cloudflare KV (views + likes)",
+    "about.stackItem5": "giscus comments (GitHub Discussions)",
+    "about.commentSystem": "Switch the comment system in site.config.ts",
+    // ===== Search =====
+    "search.title": "Search",
     "search.placeholder": "Search posts...",
-    "search.button": "Search",
-    "search.open": "Open search",
-    "search.close": "Close search",
+    "search.loading": "Loading search index...",
+    "search.hint": "Type to search. The index loads on first open (~1s).",
+    "search.searching": "Searching...",
     "search.noResults": "No matching posts found",
-    "search.placeholderHint": "Try searching for \"React\" or \"life\"",
-    "search.cancel": "Cancel",
-    // Background
+    "search.close": "Close",
+    "search.open": "Open search",
+    "search.button": "Search",
+    // ===== Background settings =====
     "bg.title": "Custom Background",
     "bg.close": "Close",
+    "bg.setTitle": "Set a custom background",
+    "bg.hasTitle": "Custom background is set",
     "bg.dragHint": "Drag to position / scroll to zoom",
     "bg.opacity": "Image opacity",
     "bg.blur": "Blur",
-    "bg.overlay": "Overlay (for text clarity)",
+    "bg.overlay": "Overlay (keeps text readable)",
     "bg.zoom": "Zoom",
     "bg.zoomIn": "Zoom in",
     "bg.zoomOut": "Zoom out",
-    "bg.focalPoint": "Focal",
+    "bg.focalPoint": "Focal point",
     "bg.reset": "Reset",
     "bg.change": "Change",
     "bg.clear": "Clear background",
     "bg.done": "Done",
-    "bg.privacyTip": "🔒 Image stored locally in your browser, never uploaded to any server",
-    // Theme
+    "bg.privacyTip":
+      "Image is stored locally in your browser and never uploaded to any server",
+    "bg.uploading": "Uploading...",
+    "bg.dropHere": "Click or drop an image here",
+    "bg.formatHint": "jpg/png/webp, up to 5MB",
+    "bg.settings": "Settings",
+    "bg.refreshTip":
+      "Background applied. If you don't see it right away, refresh the page (or press F5).",
+    "bg.actions": "Actions",
+    "bg.uploadFailed": "Upload failed",
+    "bg.clearConfirm": "Clear the background?",
+    "bg.notImage": "Please choose an image file",
+    "bg.tooLarge": "Image must be under 5MB",
+    // ===== Theme =====
     "theme.toggleLight": "Switch to light mode",
     "theme.toggleDark": "Switch to dark mode",
-    // Menu
+    // ===== Menu =====
     "menu.open": "Open menu",
     "menu.close": "Close menu",
     "menu.title": "Menu",
     "menu.escClose": "Press ESC to close",
-    // Site / language switcher
+    // ===== Site / language switcher =====
     "site.current": "Current",
     "site.switchTo": "Switch to",
     "site.language": "Language",
     "site.site": "Site",
-    // Common
-    "common.minutes": "min",
-    "common.minRead": "min read",
-    // Footer
+    "site.sites": "Sites",
+    "site.siteLanguages": "Languages for this site",
+    // ===== Comments =====
+    "comments.title": "Comments",
+    "comments.loading": "Loading comments...",
+    "comments.notConfigured": "Comment system is not configured",
+    "comments.loadFailed": "Comments could not be loaded",
+    "comments.retry": "Refresh the page to retry, or reach out via GitHub.",
+    "comments.scriptFailed": "Script failed to load",
+    "comments.mount": "Comment mount point",
+    // ===== Footer =====
     "footer.copyright": "© {year} {author} · Powered by Next.js",
-    // 404
+    // ===== 404 =====
     "notFound.title": "404",
-    "notFound.desc": "This page could not be found.",
+    "notFound.desc": "Page not found",
     "notFound.backHome": "Back to home",
+    // ===== SEO metadata =====
+    "meta.siteTitle": "{name} - {desc}",
+    "meta.siteDescription":
+      "{desc}. Notes on tech, life and reading — the things I learn and think about.",
+    "meta.keywords":
+      "personal blog,tech notes,lifestyle,Next.js,MDX,Cloudflare Pages",
   },
 } as const;
 

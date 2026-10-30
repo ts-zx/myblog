@@ -1,5 +1,6 @@
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
+import { PostsListHeader } from "@/components/PostsListHeader";
 
 export const metadata = { title: "所有文章" };
 
@@ -9,12 +10,7 @@ export default function PostsPage() {
 
   return (
     <div className="py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">所有文章</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          共 {posts.length} 篇 {tags.length > 0 && `· ${tags.length} 个标签`}
-        </p>
-      </header>
+      <PostsListHeader count={posts.length} tagsCount={tags.length} />
 
       {tags.length > 0 && (
         <div className="mb-8 flex flex-wrap gap-2">

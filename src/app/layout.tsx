@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { PagefindLoader } from "@/components/PagefindLoader";
 import { BackgroundLayer } from "@/components/BackgroundLayer";
+import { MetaUpdater } from "@/components/MetaUpdater";
 import { siteConfig } from "@/app/site.config";
 import "./globals.css";
 
@@ -69,6 +70,8 @@ export const metadata: Metadata = {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
     shortcut: "/favicon.ico",
@@ -136,6 +139,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Pagefind ESM loader - 必须在 server component 里才会被渲染到 body */}
         <PagefindLoader />
         <JsonLd />
+        <MetaUpdater />
         <Header />
         <main className="flex-1 mx-auto w-full max-w-5xl px-6 relative">{children}</main>
         <Footer />

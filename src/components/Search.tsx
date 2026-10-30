@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Search as SearchIcon, X, FileText } from "lucide-react";
 import Link from "next/link";
+import { t as translate, subscribeLocale } from "@/lib/i18n-state";
 
 type PagefindResult = {
   id: string;
@@ -31,6 +32,9 @@ declare global {
 export function Search() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
   const [results, setResults] = useState<PagefindResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
@@ -113,7 +117,7 @@ export function Search() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="搜索"
+        aria-label={t("search.open")}
         className="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
       >
         <SearchIcon className="w-4 h-4" />
@@ -135,13 +139,13 @@ export function Search() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={ready ? "搜索文章..." : "加载搜索索引..."}
+                placeholder={ready ? t("search.placeholder") : t("search.loading")}
                 className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
               />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="关闭"
+                aria-label={t("search.close")}
                 className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <X className="w-4 h-4" />
@@ -151,17 +155,17 @@ export function Search() {
             <div className="max-h-[60vh] overflow-y-auto">
               {!query && (
                 <div className="px-4 py-8 text-center text-sm text-gray-500">
-                  {ready ? "输入关键词开始搜索" : "首次打开会加载索引（约 1 秒）"}
+                  {ready ? t("search.hint") : t("search.loading")}
                 </div>
               )}
               {query && loading && (
                 <div className="px-4 py-8 text-center text-sm text-gray-500">
-                  搜索中...
+                  {t("search.searching")}
                 </div>
               )}
               {query && !loading && results.length === 0 && (
                 <div className="px-4 py-8 text-center text-sm text-gray-500">
-                  没有找到相关文章
+                  {t("search.noResults")}
                 </div>
               )}
               {results.length > 0 && (
@@ -174,8 +178,8 @@ export function Search() {
             </div>
 
             <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 flex items-center gap-3">
-              <span>esc 关闭</span>
-              <span>Ctrl+K 打开</span>
+              <span>esc {t("search.close")}</span>
+              <span>Ctrl+K {t("search.open")}</span>
             </div>
           </div>
         </div>

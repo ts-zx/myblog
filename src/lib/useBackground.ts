@@ -86,10 +86,10 @@ function ensureLoaded() {
 export const backgroundActions = {
   async setImage(file: File) {
     if (!file.type.startsWith("image/")) {
-      throw new Error("请选择图片文件");
+      throw new Error("bg.notImage");
     }
     if (file.size > 5 * 1024 * 1024) {
-      throw new Error("图片不能超过 5MB");
+      throw new Error("bg.tooLarge");
     }
     const id = `bg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     await saveImage(id, file);

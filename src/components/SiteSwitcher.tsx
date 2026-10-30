@@ -8,6 +8,7 @@ import {
   setLocale,
   buildSiteUrl,
   subscribeLocale,
+  t as translate,
   type Locale,
   type SiteId,
 } from "@/lib/i18n-state";
@@ -27,6 +28,7 @@ export function SiteSwitcher() {
   const [site, setSite] = useState<SiteId>("cn");
   const [locale, setLocaleState] = useState<Locale>("zh-CN");
   const ref = useRef<HTMLDivElement>(null);
+  const t = translate;
 
   useEffect(() => {
     setSite(getCurrentSite());
@@ -109,7 +111,7 @@ export function SiteSwitcher() {
                   {cfg.label}
                   {isCurrent && (
                     <span className="ml-1.5 text-[10px] text-indigo-600 dark:text-indigo-400">
-                      当前
+                      {t("site.current")}
                     </span>
                   )}
                 </span>

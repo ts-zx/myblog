@@ -4,6 +4,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Image as ImageIcon, X, Upload, Trash2, Info, Move, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { useBackground } from "@/lib/useBackground";
+import { t as translate, subscribeLocale } from "@/lib/i18n-state";
 
 export function BackgroundSettings({
   open,
@@ -13,6 +14,9 @@ export function BackgroundSettings({
   onClose: () => void;
 }) {
   const { bgUrl, settings, setImage, updateSettings, reset } = useBackground();
+  const [, force] = useState(0);
+  useEffect(() => subscribeLocale(() => force((n) => n + 1)), []);
+  const t = translate;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +37,7 @@ export function BackgroundSettings({
         await setImage(file);
         setShowRefreshTip(true);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "上传失败");
+        setError(e instanceof Error ? e.message : t("bg.uploadFailed"));
       }
       setBusy(false);
     },
@@ -50,7 +54,7 @@ export function BackgroundSettings({
   );
 
   const handleReset = useCallback(async () => {
-    if (!confirm("确定要清除背景吗？")) return;
+    if (!confirm(t("bg.clearConfirm"))) return;
     await reset();
     setShowRefreshTip(false);
   }, [reset]);
@@ -72,12 +76,12 @@ export function BackgroundSettings({
         <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900 rounded-t-xl">
           <ImageIcon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
           <h2 className="flex-1 font-semibold text-gray-900 dark:text-gray-100">
-            自定义背景
+            {t("bg.title")}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="关闭"
+            aria-label={t("bg.close")}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <X className="w-4 h-4" />
@@ -124,9 +128,9 @@ export function BackgroundSettings({
               <div className="aspect-video flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
                 <Upload className="w-8 h-8 mb-2" />
                 <p className="text-sm">
-                  {busy ? "上传中..." : "点击或拖拽图片到此处"}
+                  {busy ? t("bg.uploading") : t("bg.dropHere")}
                 </p>
-                <p className="text-xs mt-1 text-gray-400">支持 jpg/png/webp，最大 5MB</p>
+                <p className="text-xs mt-1 text-gray-400">{t("bg.formatHint")}</p>
               </div>
             )}
             <input
@@ -149,7 +153,7 @@ export function BackgroundSettings({
             <div className="space-y-3">
               <div>
                 <label className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                  <span>图片透明度</span>
+                  <span>{t("bg.opacity")}</span>
                   <span className="text-gray-400">{Math.round(settings.opacity * 100)}%</span>
                 </label>
                 <input
@@ -166,7 +170,7 @@ export function BackgroundSettings({
 
               <div>
                 <label className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                  <span>模糊度</span>
+                  <span>{t("bg.blur")}</span>
                   <span className="text-gray-400">{settings.blur}px</span>
                 </label>
                 <input
@@ -183,7 +187,7 @@ export function BackgroundSettings({
 
               <div>
                 <label className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                  <span>蒙层（保证文字清晰）</span>
+                  <span>{t("bg.overlay")}</span>
                   <span className="text-gray-400">{Math.round(settings.overlayOpacity * 100)}%</span>
                 </label>
                 <input
@@ -205,7 +209,7 @@ export function BackgroundSettings({
             <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 rounded">
               <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>
-                背景已设置。如果没立刻看到效果，<strong>刷新一下页面</strong>（或按 <kbd className="px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50">F5</kbd>）。
+                {t("bg.refreshTip")}
               </span>
             </div>
           )}
@@ -219,7 +223,7 @@ export function BackgroundSettings({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
-                清除背景
+                {t("bg.clear")}
               </button>
             )}
             <div className="flex-1" />
@@ -228,12 +232,12 @@ export function BackgroundSettings({
               onClick={onClose}
               className="px-3 py-1.5 rounded-md text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
             >
-              完成
+              {t("bg.done")}
             </button>
           </div>
 
           <p className="text-xs text-gray-400 text-center pt-2 border-t border-gray-100 dark:border-gray-800">
-            🔒 图片只存在你的浏览器本地，不会上传到服务器
+            {t("bg.privacyTip")}
           </p>
         </div>
       </div>
@@ -261,6 +265,9 @@ function BackgroundPositionEditor({
   onChangeZoom: (zoom: number) => void;
   onChangeImage: () => void;
 }) {
+  const [, force2] = useState(0);
+  useEffect(() => subscribeLocale(() => force2((n) => n + 1)), []);
+  const t = translate;
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -359,19 +366,19 @@ function BackgroundPositionEditor({
         <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
           <span className="px-2 py-1 rounded bg-black/60 text-white text-xs flex items-center gap-1">
             <Move className="w-3 h-3" />
-            拖动定位 / 滚轮缩放
+            {t("bg.dragHint")}
           </span>
         </div>
       </div>
 
       {/* 缩放控制 */}
       <div className="flex items-center gap-2 text-xs">
-        <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 w-12">缩放</span>
+        <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 w-12">{t("bg.zoom")}</span>
         <button
           type="button"
           onClick={() => onChangeZoom(Math.max(0.5, zoom - 0.1))}
           className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300"
-          aria-label="缩小"
+          aria-label={t("bg.zoomOut")}
         >
           <ZoomOut className="w-3 h-3" />
         </button>
@@ -387,7 +394,7 @@ function BackgroundPositionEditor({
           type="button"
           onClick={() => onChangeZoom(Math.min(3, zoom + 0.1))}
           className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300"
-          aria-label="放大"
+          aria-label={t("bg.zoomIn")}
         >
           <ZoomIn className="w-3 h-3" />
         </button>
@@ -399,7 +406,7 @@ function BackgroundPositionEditor({
       {/* 控制按钮 */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-500 dark:text-gray-400">
-          焦点: {Math.round(position.x)}%, {Math.round(position.y)}%
+          {t("bg.focalPoint")}: {Math.round(position.x)}%, {Math.round(position.y)}%
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -408,7 +415,7 @@ function BackgroundPositionEditor({
             className="inline-flex items-center gap-1 px-2 py-1 rounded text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <RotateCcw className="w-3 h-3" />
-            重置
+            {t("bg.reset")}
           </button>
           <button
             type="button"
@@ -416,7 +423,7 @@ function BackgroundPositionEditor({
             className="inline-flex items-center gap-1 px-2 py-1 rounded text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
           >
             <Upload className="w-3 h-3" />
-            更换
+            {t("bg.change")}
           </button>
         </div>
       </div>

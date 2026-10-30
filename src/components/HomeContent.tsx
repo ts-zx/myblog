@@ -29,7 +29,9 @@ export function HomeGreeting() {
         .
       </h1>
       <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
-        {siteConfig.description}。
+        {t("home.description")}
+        {t("home.sep")}
+        {t("home.intro")}
         <Sparkles
           className="inline w-5 h-5 text-indigo-500 align-middle ml-1"
           aria-hidden

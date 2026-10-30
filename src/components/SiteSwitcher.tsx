@@ -14,7 +14,6 @@ import {
 } from "@/lib/i18n-state";
 import { siteConfig } from "@/app/site.config";
 import { LOCALE_LABELS, SUPPORTED_LOCALES } from "@/lib/i18n";
-import { GlobeIcon } from "@/components/GlobeIcon";
 
 /**
  * 站点 + 语言 联合切换器
@@ -80,17 +79,6 @@ export function SiteSwitcher() {
         aria-expanded={open}
         title={currentSiteCfg?.description}
       >
-        {/* 当前站点图标（国旗 / 地球） */}
-        {currentSiteCfg?.icon ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={currentSiteCfg.icon}
-            alt=""
-            className="h-[11px] w-auto rounded-[2px] shadow-sm ring-1 ring-black/10 dark:ring-white/20 flex-shrink-0"
-          />
-        ) : (
-          <GlobeIcon className="w-3.5 h-3.5 flex-shrink-0" />
-        )}
         <span>{currentLabel}</span>
         <ChevronDown
           className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}

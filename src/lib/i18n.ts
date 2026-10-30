@@ -13,6 +13,9 @@ export const translations = {
     "home.aboutMe": "关于我",
     "home.latestPosts": "最新文章",
     "home.viewAll": "全部",
+    "home.description": "记录、思考、分享",
+    "home.intro": "这里记录我的学习、生活和思考，分享技术笔记与日常感悟",
+    "home.sep": "。",
     "home.emptyTitle": "还没有文章",
     "home.emptyHint": "去 content/posts 写第一篇吧～",
     // ===== 文章卡片 / 详情 =====
@@ -116,7 +119,7 @@ export const translations = {
     // ===== SEO metadata =====
     "meta.siteTitle": "{name} - {desc}",
     "meta.siteDescription":
-      "{desc}。这里记录我的学习、生活和思考，分享技术笔记与日常感悟。",
+      "记录、思考、分享。这里记录我的学习、生活和思考，分享技术笔记与日常感悟。",
     "meta.keywords": "个人博客,技术笔记,生活随笔,Next.js,MDX,Cloudflare Pages",
   },
 
@@ -131,6 +134,9 @@ export const translations = {
     "home.aboutMe": "關於我",
     "home.latestPosts": "最新文章",
     "home.viewAll": "全部",
+    "home.description": "記錄、思考、分享",
+    "home.intro": "這裡記錄我的學習、生活和思考，分享技術筆記與日常感悟",
+    "home.sep": "。",
     "home.emptyTitle": "還沒有文章",
     "home.emptyHint": "去 content/posts 寫第一篇吧～",
     // ===== 文章卡片 / 詳情 =====
@@ -234,7 +240,7 @@ export const translations = {
     // ===== SEO metadata =====
     "meta.siteTitle": "{name} - {desc}",
     "meta.siteDescription":
-      "{desc}。這裡記錄我的學習、生活和思考，分享技術筆記與日常感悟。",
+      "記錄、思考、分享。這裡記錄我的學習、生活和思考，分享技術筆記與日常感悟。",
     "meta.keywords": "個人博客,技術筆記,生活隨筆,Next.js,MDX,Cloudflare Pages",
   },
 
@@ -249,6 +255,9 @@ export const translations = {
     "home.aboutMe": "About me",
     "home.latestPosts": "Latest posts",
     "home.viewAll": "All",
+    "home.description": "Recording, thinking, sharing",
+    "home.intro": "Notes on tech, life, reading, and the things I think about",
+    "home.sep": ". ",
     "home.emptyTitle": "No posts yet",
     "home.emptyHint": "Write your first one in content/posts",
     // ===== Post card / detail =====
@@ -354,7 +363,7 @@ export const translations = {
     // ===== SEO metadata =====
     "meta.siteTitle": "{name} - {desc}",
     "meta.siteDescription":
-      "{desc}. Notes on tech, life and reading — the things I learn and think about.",
+      "Recording, thinking, sharing. Notes on tech, life, reading, and the things I think about.",
     "meta.keywords":
       "personal blog,tech notes,lifestyle,Next.js,MDX,Cloudflare Pages",
   },

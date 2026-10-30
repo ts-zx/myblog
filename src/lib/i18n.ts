@@ -366,9 +366,9 @@ export const SUPPORTED_LOCALES: Locale[] = ["zh-CN", "zh-TW", "en"];
 
 export const LOCALE_LABELS: Record<
   Locale,
-  { native: string; english: string; flag: string }
+  { native: string; english: string; icon: string }
 > = {
-  "zh-CN": { native: "简体中文", english: "Chinese (Simplified)", flag: "🇨🇳" },
-  "zh-TW": { native: "繁體中文", english: "Chinese (Traditional)", flag: "🇹🇼" },
-  en: { native: "English", english: "English", flag: "🌐" },
+  "zh-CN": { native: "简体中文", english: "Chinese (Simplified)", icon: "/flags/cn.svg" },
+  "zh-TW": { native: "繁體中文", english: "Chinese (Traditional)", icon: "/flags/tw.svg" },
+  en: { native: "English", english: "English", icon: "/flags/us.svg" },
 };

@@ -14,6 +14,7 @@ import {
 } from "@/lib/i18n-state";
 import { siteConfig } from "@/app/site.config";
 import { LOCALE_LABELS, SUPPORTED_LOCALES } from "@/lib/i18n";
+import { GlobeIcon } from "@/components/GlobeIcon";
 
 /**
  * 站点 + 语言 联合切换器
@@ -74,12 +75,23 @@ export function SiteSwitcher() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap"
+        className="inline-flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors whitespace-nowrap"
         aria-haspopup="menu"
         aria-expanded={open}
         title={currentSiteCfg?.description}
       >
-        {currentLabel}
+        {/* 当前站点图标（国旗 / 地球） */}
+        {currentSiteCfg?.icon ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={currentSiteCfg.icon}
+            alt=""
+            className="h-[11px] w-auto rounded-[2px] shadow-sm ring-1 ring-black/10 dark:ring-white/20 flex-shrink-0"
+          />
+        ) : (
+          <GlobeIcon className="w-3.5 h-3.5 flex-shrink-0" />
+        )}
+        <span>{currentLabel}</span>
         <ChevronDown
           className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
         />
@@ -106,6 +118,12 @@ export function SiteSwitcher() {
                   className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                     isCurrent ? "bg-indigo-500" : "bg-transparent"
                   }`}
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={cfg.icon}
+                  alt=""
+                  className="h-[14px] w-auto rounded-[2px] shadow-sm ring-1 ring-black/10 dark:ring-white/20 flex-shrink-0"
                 />
                 <span className="flex-1">
                   {cfg.label}
@@ -137,8 +155,13 @@ export function SiteSwitcher() {
                   className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors"
                   role="menuitem"
                 >
-                  <span className="text-base leading-none flex-shrink-0">
-                    {info.flag}
+                  <span className="flex-shrink-0 flex items-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={info.icon}
+                      alt=""
+                      className="h-[11px] w-auto rounded-[2px] shadow-sm ring-1 ring-black/10 dark:ring-white/20"
+                    />
                   </span>
                   <span className="flex-1">
                     {currentSiteCfg?.label} - {info.native}

@@ -53,15 +53,34 @@ export function useTheme() {
         localStorage.setItem("theme", next);
       };
 
+      // 记录切换方向，供 CSS 判断该动 old 还是 new
+      const root = document.documentElement;
+      root.dataset.themeTransition = next === "dark" ? "to-dark" : "to-light";
+
       // 检查浏览器是否支持 View Transitions
       const doc = document as Document & {
-        startViewTransition?: (cb: () => void) => unknown;
+        startViewTransition?: (cb: () => void) => {
+          finished?: Promise<unknown>;
+        };
       };
 
       if (typeof doc.startViewTransition === "function") {
-        doc.startViewTransition(applyTheme);
+        const transition = doc.startViewTransition(applyTheme);
+        // 动画结束后清理标记
+        if (transition?.finished) {
+          transition.finished
+            .catch(() => {})
+            .finally(() => {
+              delete root.dataset.themeTransition;
+            });
+        }
+        // 兜底：2 秒后无论如何清掉
+        setTimeout(() => {
+          delete root.dataset.themeTransition;
+        }, 1200);
       } else {
         applyTheme();
+        delete root.dataset.themeTransition;
       }
     },
     [resolvedTheme]

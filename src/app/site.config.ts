@@ -23,6 +23,7 @@ export const siteConfig = {
   sites: {
     cn: {
       label: "中国站",
+      icon: "/flags/cn.svg",
       description: "中国大陆访问 · EdgeOne 加速",
       url: "https://tszx.zh.kg",
       hosts: ["tszx.zh.kg"],
@@ -31,6 +32,7 @@ export const siteConfig = {
     },
     intl: {
       label: "国际站",
+      icon: "/flags/world.svg",
       description: "海外访问 · Cloudflare 直连",
       url: "https://www.tszx.zh.kg",
       hosts: ["www.tszx.zh.kg"],

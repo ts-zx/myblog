@@ -69,22 +69,44 @@ body {
 ::-webkit-scrollbar-thumb { background: rgb(var(--border)); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted)); }
 
-/* === 主题切换圆形展开动画 === */
+/* === 主题切换圆形动画 === */
+/* 起点 = 点击的太阳/月亮图标位置（--theme-x / --theme-y）*/
+/* 只动一层：另一层保持不动垫底，避免出现"两边同时变"的透明缝隙 */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.5s;
+  animation-duration: 0.45s;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: normal;
+  /* 强制撑满视口，避免 UA 默认 block-size:auto 裁掉圆形 */
+  block-size: 100%;
+  inline-size: 100%;
 }
 
-/* 旧主题：以点击位置为中心，向内收缩消失 */
-::view-transition-old(root) {
-  clip-path: circle(150% at var(--theme-x, 50%) var(--theme-y, 50%));
-  animation-name: theme-shrink;
-}
-
-/* 新主题：从点击位置向外展开 */
-::view-transition-new(root) {
+/* 变深：新主题（深）从图标处圆形展开铺满，旧主题保持不动垫底 */
+html[data-theme-transition="to-dark"]::view-transition-new(root) {
   animation-name: theme-expand;
+  z-index: 2;
+}
+html[data-theme-transition="to-dark"]::view-transition-old(root) {
+  animation-name: theme-hold;
+  z-index: 1;
+}
+
+/* 变浅：旧主题（深）向图标处收缩消失，新主题（浅）在下面透出 */
+html[data-theme-transition="to-light"]::view-transition-old(root) {
+  animation-name: theme-shrink;
+  z-index: 2;
+}
+html[data-theme-transition="to-light"]::view-transition-new(root) {
+  animation-name: theme-hold;
+  z-index: 1;
+}
+
+@keyframes theme-hold {
+  from,
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes theme-expand {
@@ -102,5 +124,13 @@ body {
   }
   to {
     clip-path: circle(0% at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+}
+
+/* 不支持 View Transitions 的浏览器：降级为淡入淡出 */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
   }
 }
